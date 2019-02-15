@@ -1,0 +1,27 @@
+NOMI CASI D'USO PROGETTO GREENHOUSE
+
+Green house Edge(esp)
+- acquisizione del valore(percentuale) di umidità
+- invio periodico del valore dell'umidità al server
+
+Green house Server(pc)
+- riceve periodicamente il valore(percentuale) dell'umidità dalla greenhouse edge(esp)
+- invio statistiche alla greenhouse frontend(pc)
+- invio segnale di apertura/chiusura pompa alla greenhouse controller(edge)
+- invio periodico del valore(percentuale) dell'umidità allla greenhouse controller(arduino) quando esso lo richiede(quando è connessa l'app android)
+
+Green house Controller(arduino)
+- apertura/chiusura pompe
+- gestione led(per modalità automatica/manuale e per intensità irrigazione)
+- invio del valore(percentuale) dell'umidità alla greenhouse mobile app(android)
+
+Green house mobile(android)
+- invio segnale di apertura/chiusura pompa alla greenhouse controller(edge)(ha la precedenza sul server)
+- riceve/visualizzare periodicamente il valore(percentuale) dell'umidità dalla greenhouse edge(esp)
+- connessione alla greenhouse controller(arduino)
+
+Green house frontend(pc)
+- riceve/visualizzare periodicamente statistiche dalla greenhouse frontend(pc)
+
+
+Pattern state per gestione modalità automatica/manuale in arduino
