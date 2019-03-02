@@ -1,22 +1,78 @@
-#define POTPIN A0
+#define SENSOR_PIN A0
 #define MAX_VALUE 1023
-#define HUMID_SENSOR 0
+#define PERIOD 1000
 
+#include <ESP8266HTTPClient.h>
+#include <ESP8266WiFi.h>
+#ifdef HUMID_SENSOR
+#include <dht.h>
+#endif
+
+#ifdef HUMID_SENSOR
+dht DHT;
+#endif
 int humidity = 0;
+int lastHumiditySend = -1;
+unsigned long initTime;
+unsigned long finalTime;
+/* wifi network name */
+char* ssidName = "G3_1477";
+/* WPA2 PSK password */
+char* pwd = "00000000";
+/* service IP address */ 
+char* address = "http://3b1896f4.ngrok.io";
 
 void setup() {
   Serial.begin(115200);
-  pinMode(POTPIN, INPUT);
+  pinMode(SENSOR_PIN, INPUT);
+  WiFi.begin(ssidName, pwd);
+  Serial.print("Connecting...");
+  while (WiFi.status() != WL_CONNECTED) {  
+    delay(500);
+    Serial.print(".");
+  } 
+  Serial.println("Connected: \n local IP: "+WiFi.localIP());
+}
+
+int sendData(String address, float value, String place){  
+   HTTPClient http;    
+   http.begin(address + "/api/data/");      
+   http.addHeader("Content-Type", "application/json");     
+   String msg = 
+    String("{ \"value\": ") + String(value) + 
+    ", \"place\": \"" + place +"\" }";
+   int retCode = http.POST(msg);   
+   http.end();  
+   // String payload = http.getString();  
+   // Serial.println(payload);      
+   return retCode;
 }
 
 void loop() {
-  Serial.println("Hello world!"); 
-  delay(500);
-  if (HUMID_SENSOR) {
-    
-  } else {
-    humidity = 100 * analogRead(POTPIN) / MAX_VALUE;
-    Serial.println(String(humidity) + "%");
-    //WE SEND THE HUMIDITY AT THE SERVER, NOW
-  }
+  initTime = millis();
+#ifdef HUMID_SENSOR
+   DHT.read11(SENSOR_PIN);
+   humidity = DHT.humidity;
+#else
+  humidity = 100 * analogRead(SENSOR_PIN) / MAX_VALUE;
+#endif
+  Serial.println(String(humidity) + "%");
+  if (lastHumiditySend != humidity) {
+    if (WiFi.status()== WL_CONNECTED) {
+      /* send data */
+      Serial.print("sending "+String(humidity)+"...");    
+      int code = sendData(address, humidity, "home");
+      /* log result */
+      if (code == 200) {
+        Serial.println("Umidity is been send correctly!");
+        lastHumiditySend = humidity;  
+      } else {
+        Serial.println("There was been an error with sending the humidity!");
+      }
+    } else {
+      Serial.println("Error in WiFi connection");
+    }
+  }  
+  finalTime = millis();
+  delay(PERIOD - (finalTime - initTime));
 }
