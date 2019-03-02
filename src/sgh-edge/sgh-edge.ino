@@ -25,10 +25,10 @@ char* ssidName = "G3_1477";
 /* WPA2 PSK password */
 char* pwd = "00000000";
 /* service IP address */ 
-char* address = "http://3b1896f4.ngrok.io";
+char* address = "http://8624b131.ngrok.io";
 
 void setup() {
-  Serial.begin(BAUDE_RATE);  
+  Serial.begin(BAUDE_RATE);
   pinMode(SENSOR_PIN, INPUT);  
   WiFi.begin(ssidName, pwd);  
   Serial.print("Connecting...");
@@ -38,7 +38,7 @@ void setup() {
     Serial.print(".");
   } 
   
-  Serial.println("Connected: \n local IP: "+WiFi.localIP());
+  Serial.println("Connected: \n local IP: " + WiFi.localIP());
 }
 
 int sendData(String address, float value, String place){
@@ -83,8 +83,11 @@ void loop() {
     } else {
       Serial.println("Error in WiFi connection");
     }
-  }  
-  
+  }
+
   finalTime = millis();
-  delay(PERIOD - (finalTime - initTime));
+  unsigned long waitingTime = PERIOD - (finalTime - initTime);
+  if (waitingTime <= PERIOD) {
+    delay(waitingTime);
+  }
 }
