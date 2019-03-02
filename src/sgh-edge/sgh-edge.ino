@@ -1,6 +1,9 @@
 #define SENSOR_PIN A0
 #define MAX_VALUE 1023
 #define PERIOD 1000
+#define BAUDE_RATE 115200
+#define TIME_FOR_CHECK_STATE_CONNECTION 500
+#define OK 200
 
 #include <ESP8266HTTPClient.h>
 #include <ESP8266WiFi.h>
@@ -23,12 +26,12 @@ char* pwd = "00000000";
 char* address = "http://3b1896f4.ngrok.io";
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(BAUDE_RATE);
   pinMode(SENSOR_PIN, INPUT);
   WiFi.begin(ssidName, pwd);
   Serial.print("Connecting...");
   while (WiFi.status() != WL_CONNECTED) {  
-    delay(500);
+    delay(TIME_FOR_CHECK_STATE_CONNECTION);
     Serial.print(".");
   } 
   Serial.println("Connected: \n local IP: "+WiFi.localIP());
@@ -63,7 +66,7 @@ void loop() {
       Serial.print("sending "+String(humidity)+"...");    
       int code = sendData(address, humidity, "home");
       /* log result */
-      if (code == 200) {
+      if (code == OK) {
         Serial.println("Umidity is been send correctly!");
         lastHumiditySend = humidity;  
       } else {
