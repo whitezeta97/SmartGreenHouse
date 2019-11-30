@@ -1,0 +1,31 @@
+package serialcomm;
+
+/**
+ * Simple interface for an async msg communication channel
+ */
+public interface CommChannel {
+
+	/**
+	 * Send a message represented by a string (without new line).
+	 * 
+	 * Asynchronous model.
+	 * 
+	 * @param msg
+	 */
+	void sendMsg(final String msg);
+
+	/**
+	 * To receive a message.
+	 * 
+	 * Blocking behaviour.
+	 */
+	String receiveMsg() throws InterruptedException;
+
+	/**
+	 * To check if a message is available.
+	 * 
+	 * @return
+	 */
+	boolean isMsgAvailable();
+
+}

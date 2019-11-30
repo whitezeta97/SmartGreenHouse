@@ -9,5 +9,7 @@
 	<classpathentry kind="lib" path="lib/vertx-core-3.5.4.jar"/>
 	<classpathentry kind="lib" path="lib/vertx-web-3.5.4.jar"/>
 	<classpathentry kind="lib" path="lib/vertx-web-client-3.5.4.jar"/>
+	<classpathentry kind="lib" path="/seiot1819/java/jSSC-2.8.0-Release/jssc.jar"/>
+	<classpathentry kind="lib" path="/seiot1819/java/rxtx-2.2-dist/mac_osx/RXTXcomm.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
