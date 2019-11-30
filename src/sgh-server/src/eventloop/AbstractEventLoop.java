@@ -5,9 +5,8 @@ import java.util.concurrent.BlockingQueue;
 
 import events.Event;
 import observables.Observable;
-import observer.event.EventObserver;
 
-public abstract class AbstractEventLoop extends Thread implements EventObserver {
+public abstract class AbstractEventLoop extends Thread implements EventLoopObserver {
 
 	private static final int defaultEventQueueSize = 50;
 	protected BlockingQueue<Event> eventQueue;
