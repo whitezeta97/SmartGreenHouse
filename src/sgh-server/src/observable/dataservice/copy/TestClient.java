@@ -1,4 +1,4 @@
-package observable.dataservice;
+package observable.dataservice.copy;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Vertx;
@@ -9,7 +9,7 @@ public class TestClient extends AbstractVerticle {
 	
 	public static void main(String[] args) {		
 	
-		String host = "496ccad1.ngrok.io";
+		String host = "55d3b86f.ngrok.io";
 		int port = 80;
 
 		Vertx vertx = Vertx.vertx();

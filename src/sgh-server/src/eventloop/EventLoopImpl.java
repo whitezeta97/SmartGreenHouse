@@ -3,6 +3,8 @@ package eventloop;
 import afms.SghAfsm;
 import afms.SmartGreenHouseAFSM;
 import events.Event;
+import io.vertx.core.Vertx;
+import observable.serverdataservice.ObservableDataService;
 import observables.msgservice.ObservableMsgService;
 import observables.msgservice.ObservableMsgServiceImpl;
 import observables.timer.ObservableTimer;
@@ -20,6 +22,11 @@ public class EventLoopImpl extends AbstractEventLoop {
 
 		ObservableTimer timer = new ObservableTimerImpl();
 		timer.addObserver(this);
+
+		Vertx vertx = Vertx.vertx();
+		ObservableDataService service = new ObservableDataService(80);
+		service.addObserver(this);
+		vertx.deployVerticle(service);
 
 		this.asincFiniteStateMachine = new SmartGreenHouseAFSM(timer, msgService);
 

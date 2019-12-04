@@ -1,4 +1,4 @@
-package observable.dataservice;
+package observable.dataservice.copy;
 
 class DataPointImpl implements DataPoint {
 	private double value;

@@ -1,7 +1,8 @@
 package afms;
 
 import events.Event;
-import events.MsgEvent;
+import events.ControllerMsgEvent;
+import events.EdgeMsgEvent;
 import events.TickEvent;
 import observables.msgservice.ObservableMsgService;
 import observables.timer.ObservableTimer;
@@ -43,13 +44,12 @@ public class SmartGreenHouseAFSM implements SghAfsm {
 			System.out.println("Timer STARTED");
 
 			// TODO: messaggiare il Client
-			System.out.println("Server sent message: " + this.currentState);
 		}
 
-		if (umidity >= U_MED && umidity <= U_LOW) {
+		if (umidity >= U_MED && umidity <= UMIN) {
 			this.currentState = State.P_MIN;
 
-		} else if (umidity >= UMIN && umidity < U_MED) {
+		} else if (umidity >= U_LOW && umidity < U_MED) {
 			this.currentState = State.P_MED;
 
 		} else if (umidity < U_LOW) {
@@ -77,8 +77,8 @@ public class SmartGreenHouseAFSM implements SghAfsm {
 	@Override
 	public void performAction(final Event ev) {
 		try {
-			if (ev instanceof MsgEvent) {
-				String msg = ((MsgEvent) ev).getMsg();
+			if (ev instanceof ControllerMsgEvent) {
+				String msg = ((ControllerMsgEvent) ev).getMsg();
 				System.out.println("Received: " + msg);
 
 				if (msg.equals("manualmodeon")) {
@@ -97,11 +97,20 @@ public class SmartGreenHouseAFSM implements SghAfsm {
 					System.out.println("Manual Mode OFF");
 					System.out.println("Server status changed in: " + this.currentState);
 
-				} else if (msg.matches("-?\\d+(\\.\\d+)?")) {
-					this.manageUmidity(Integer.parseInt(msg));
+				}
+
+			} else if (ev instanceof EdgeMsgEvent) {
+				float umidity = ((EdgeMsgEvent) ev).getMsg();
+				System.out.println("Received: " + umidity);
+
+				if (umidity >= 0 && umidity <= 100) {
+					this.manageUmidity(umidity);
+				} else {
+					System.out.println("Received wrong umidty value");
 				}
 
 			} else if (ev instanceof TickEvent) {
+				this.timer.stop();
 				this.currentState = State.PUMP_OFF;
 				this.msgService.sendMsg(this.currentState.toString());
 				// TODO: messaggiare il Client

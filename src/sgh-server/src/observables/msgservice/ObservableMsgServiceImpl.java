@@ -1,6 +1,6 @@
 package observables.msgservice;
 
-import events.MsgEventImpl;
+import events.ControllerMsgEventImpl;
 import observables.AbstractObservable;
 import serialcomm.CommChannel;
 import serialcomm.ExtendedSerialCommChannel;
@@ -32,7 +32,7 @@ public class ObservableMsgServiceImpl extends AbstractObservable implements Obse
 				try {
 					String msg = channel.receiveMsg();
 					System.out.println("received " + msg);
-					this.notifyEvent(new MsgEventImpl(msg));
+					this.notifyEvent(new ControllerMsgEventImpl(msg));
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
@@ -42,7 +42,6 @@ public class ObservableMsgServiceImpl extends AbstractObservable implements Obse
 
 	public void sendMsg(String msg) {
 		this.channel.sendMsg(msg);
-		System.out.println("sent " + msg);
 	}
 
 }
