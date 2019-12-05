@@ -1,6 +1,7 @@
 package afms;
 
 import events.Event;
+import clientcommunication.ClientCommunication;
 import events.ControllerMsgEvent;
 import events.EdgeMsgEvent;
 import events.TickEvent;
@@ -26,13 +27,17 @@ public class SmartGreenHouseAFSM implements SghAfsm {
 	private ObservableMsgService msgService;
 	private ObservableTimer timer;
 
-	public SmartGreenHouseAFSM(ObservableTimer timer, ObservableMsgService msgService) {
+	private ClientCommunication clientComm;
+
+	public SmartGreenHouseAFSM(ObservableTimer timer, ObservableMsgService msgService, ClientCommunication clientComm) {
 		this.timer = timer;
 		this.msgService = msgService;
+		this.clientComm = clientComm;
 
 		this.currentState = State.PUMP_OFF;
 
-		// TODO: messaggiare il Client con Stato serra
+		this.clientComm.sendSghState(this.currentState.toString());
+
 		System.out.println("Server started at: " + new java.util.Date());
 		System.out.println("Server state: " + this.currentState);
 	}
@@ -43,7 +48,7 @@ public class SmartGreenHouseAFSM implements SghAfsm {
 			this.timer.start(T_MAX);
 			System.out.println("Timer STARTED");
 
-			// TODO: messaggiare il Client
+			this.clientComm.sendWatering(true);
 		}
 
 		if (umidity >= U_MED && umidity <= UMIN) {
@@ -64,7 +69,7 @@ public class SmartGreenHouseAFSM implements SghAfsm {
 
 		this.msgService.sendMsg(this.currentState.toString());
 
-		// TODO: messaggiare il Client
+		this.clientComm.sendSghState(this.currentState.toString());
 		System.out.println("Server sent message: " + this.currentState);
 		System.out.println("Server sent message to Client: " + this.currentState + " " + new java.util.Date());
 	}
@@ -84,7 +89,8 @@ public class SmartGreenHouseAFSM implements SghAfsm {
 				if (msg.equals("manualmodeon")) {
 					this.manualMode = true;
 					this.timer.stop();
-					// TODO: messaggiare il Client
+					
+					this.clientComm.sendManualMode(this.manualMode);
 
 					System.out.println("Manual Mode ON");
 
@@ -92,7 +98,8 @@ public class SmartGreenHouseAFSM implements SghAfsm {
 					this.manualMode = false;
 					this.currentState = State.PUMP_OFF;
 					this.msgService.sendMsg(this.currentState.toString());
-					// TODO: messaggiare il Client
+					
+					this.clientComm.sendManualMode(this.manualMode);
 
 					System.out.println("Manual Mode OFF");
 					System.out.println("Server status changed in: " + this.currentState);
@@ -112,8 +119,11 @@ public class SmartGreenHouseAFSM implements SghAfsm {
 			} else if (ev instanceof TickEvent) {
 				this.timer.stop();
 				this.currentState = State.PUMP_OFF;
+				
 				this.msgService.sendMsg(this.currentState.toString());
-				// TODO: messaggiare il Client
+				
+				this.clientComm.sendWarning("WARNING: Watering time exceeded!");
+				
 
 				System.out.println("WARNING: Watering time exceeded!");
 				System.out.println("Server status changed in: " + this.currentState);

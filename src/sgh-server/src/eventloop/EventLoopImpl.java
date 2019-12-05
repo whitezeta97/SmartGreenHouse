@@ -2,6 +2,8 @@ package eventloop;
 
 import afms.SghAfsm;
 import afms.SmartGreenHouseAFSM;
+import clientcommunication.ClientCommunication;
+import clientcommunication.ClientCommunicationImpl;
 import events.Event;
 import io.vertx.core.Vertx;
 import observable.serverdataservice.ObservableDataService;
@@ -24,11 +26,13 @@ public class EventLoopImpl extends AbstractEventLoop {
 		timer.addObserver(this);
 
 		Vertx vertx = Vertx.vertx();
-		ObservableDataService service = new ObservableDataService(80);
-		service.addObserver(this);
-		vertx.deployVerticle(service);
+		ObservableDataService edgeDataService = new ObservableDataService(80);
+		edgeDataService.addObserver(this);
+		vertx.deployVerticle(edgeDataService);
 
-		this.asincFiniteStateMachine = new SmartGreenHouseAFSM(timer, msgService);
+		ClientCommunication clientComm = new ClientCommunicationImpl(80, "601a1d31.ngrok.io");
+
+		this.asincFiniteStateMachine = new SmartGreenHouseAFSM(timer, msgService, clientComm);
 
 	}
 
@@ -44,8 +48,13 @@ public class EventLoopImpl extends AbstractEventLoop {
 	public boolean notifyEvent(final Event ev) {
 		if (this.asincFiniteStateMachine.isManualMode())
 			return false;
-		else
+		else {
+			if (this.eventQueue.remainingCapacity() == 0) {
+				this.eventQueue.remove();
+			}
 			return this.eventQueue.offer(ev);
+		}
+
 	}
 
 }
