@@ -1,4 +1,4 @@
-package client;
+package controller;
 
 class DataPoint {
 	private double value;

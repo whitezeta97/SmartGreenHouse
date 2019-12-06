@@ -1,28 +1,35 @@
-package observable.dataservice.copy;
+package observable.serverdataservice;
 
 import io.vertx.core.AbstractVerticle;
-import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
+import observables.Observable;
+import observer.event.EventObserver;
 
-import java.util.Date;
 import java.util.LinkedList;
+
+import events.EdgeMsgEvent;
+import events.EdgeMsgEventImpl;
+import events.Event;
 
 /*
  * Data Service as a vertx event-loop 
  */
-public class DataService extends AbstractVerticle {
+public class ObservableSghDataService extends AbstractVerticle implements Observable {
 
 	private int port;
 	private static final int MAX_SIZE = 10;
-	private LinkedList<DataPoint> values;
+	private LinkedList<ServerDataPoint> values;
 
-	public DataService(int port) {
-		values = new LinkedList<>();
+	private LinkedList<EventObserver> observers;
+
+	public ObservableSghDataService(int port) {
+		this.values = new LinkedList<>();
+		this.observers = new LinkedList<>();
 		this.port = port;
 	}
 
@@ -45,26 +52,25 @@ public class DataService extends AbstractVerticle {
 			sendError(400, response);
 		} else {
 			float value = res.getFloat("value");
-			String place = res.getString("place");
-			long time = System.currentTimeMillis();
 
-			values.addFirst(new DataPointImpl(value, time, place));
-			if (values.size() > MAX_SIZE) {
-				values.removeLast();
+			this.values.addFirst(new DataPointImpl(value));
+			if (this.values.size() > MAX_SIZE) {
+				this.values.removeLast();
 			}
 
-			log("New value: " + value + " from " + place + " on " + new Date(time));
+			log(value + "");
 			response.setStatusCode(200).end();
+			EdgeMsgEvent umidityEvent = new EdgeMsgEventImpl(value);
+			this.notifyEvent(umidityEvent);
+
 		}
 	}
 
 	private void handleGetData(RoutingContext routingContext) {
 		JsonArray arr = new JsonArray();
-		for (DataPoint p : values) {
+		for (ServerDataPoint p : this.values) {
 			JsonObject data = new JsonObject();
-			data.put("time", p.getTime());
 			data.put("value", p.getValue());
-			data.put("place", p.getPlace());
 			arr.add(data);
 		}
 		routingContext.response().putHeader("content-type", "application/json").end(arr.encodePrettily());
@@ -78,9 +84,28 @@ public class DataService extends AbstractVerticle {
 		System.out.println("[DATA SERVICE] " + msg);
 	}
 
-	public static void main(String[] args) {
-		Vertx vertx = Vertx.vertx();
-		DataService service = new DataService(80);
-		vertx.deployVerticle(service);
+	@Override
+	public void addObserver(EventObserver obs) {
+		synchronized (this.observers) {
+			this.observers.add(obs);
+		}
+
 	}
+
+	@Override
+	public void removeObserver(EventObserver obs) {
+		synchronized (this.observers) {
+			this.observers.remove(obs);
+		}
+
+	}
+
+	private void notifyEvent(final Event ev) {
+		synchronized (this.observers) {
+			for (EventObserver obs : this.observers) {
+				obs.notifyEvent(ev);
+			}
+		}
+	}
+
 }

@@ -12,7 +12,7 @@ public class ClientCommunicationImpl implements ClientCommunication {
 	private JsonObject jsonObject;
 
 	private enum MessageType {
-		SGH_STATE, UMIDITY, WATERING, MANUALMODE, WARNING,
+		FIRST_MESSAGE, SERVER_STARTED, SGH_STATE, UMIDITY, WATERING_ON, WATERING_OFF, MANUALMODE, WARNING,
 	}
 
 	public ClientCommunicationImpl(final int port, final String host) {
@@ -34,6 +34,14 @@ public class ClientCommunicationImpl implements ClientCommunication {
 	}
 
 	@Override
+	public void sendFirstMessage(String state) {
+		this.jsonObject.clear();
+		this.jsonObject.put("msgtype", MessageType.FIRST_MESSAGE).put("state", state);
+		this.sendMsg();
+
+	}
+
+	@Override
 	public void sendSghState(String state) {
 		this.jsonObject.clear();
 		this.jsonObject.put("msgtype", MessageType.SGH_STATE).put("state", state);
@@ -49,23 +57,30 @@ public class ClientCommunicationImpl implements ClientCommunication {
 	}
 
 	@Override
-	public void sendWatering(final boolean isStarted) {
+	public void sendWateringOn() {
 		this.jsonObject.clear();
-		this.jsonObject.put("msgtype", MessageType.WATERING).put("watering", isStarted);
-		this.sendMsg();
-	}
-	
-	@Override
-	public void sendManualMode(final boolean isManualMode) {
-		this.jsonObject.clear();
-		this.jsonObject.put("msgtype", MessageType.MANUALMODE).put("watering", isManualMode);
+		this.jsonObject.put("msgtype", MessageType.WATERING_ON);
 		this.sendMsg();
 	}
 
 	@Override
-	public void sendWarning(final String warningMsg) {
+	public void sendWateringOff(final long wateringDuration) {
 		this.jsonObject.clear();
-		this.jsonObject.put("msgtype", MessageType.WARNING).put("warning", warningMsg);
+		this.jsonObject.put("msgtype", MessageType.WATERING_OFF).put("wateringduration", wateringDuration);
+		this.sendMsg();
+	}
+
+	@Override
+	public void sendManualMode(final boolean isManualMode) {
+		this.jsonObject.clear();
+		this.jsonObject.put("msgtype", MessageType.MANUALMODE).put("manualmode", isManualMode);
+		this.sendMsg();
+	}
+
+	@Override
+	public void sendWarning(final String warningMsg, final String state) {
+		this.jsonObject.clear();
+		this.jsonObject.put("msgtype", MessageType.WARNING).put("warning", warningMsg).put("state", state);
 		this.sendMsg();
 	}
 

@@ -1,35 +1,28 @@
-package observable.serverdataservice;
+package controller;
 
 import io.vertx.core.AbstractVerticle;
+import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
-import observables.Observable;
-import observer.event.EventObserver;
 
+import java.util.Date;
 import java.util.LinkedList;
-
-import events.EdgeMsgEvent;
-import events.EdgeMsgEventImpl;
-import events.Event;
 
 /*
  * Data Service as a vertx event-loop 
  */
-public class ObservableDataService extends AbstractVerticle implements Observable {
+public class DataService extends AbstractVerticle {
 
 	private int port;
 	private static final int MAX_SIZE = 10;
-	private LinkedList<ServerDataPoint> values;
+	private LinkedList<DataPoint> values;
 
-	private LinkedList<EventObserver> observers;
-
-	public ObservableDataService(int port) {
+	public DataService(int port) {
 		this.values = new LinkedList<>();
-		this.observers = new LinkedList<>();
 		this.port = port;
 	}
 
@@ -52,26 +45,32 @@ public class ObservableDataService extends AbstractVerticle implements Observabl
 			sendError(400, response);
 		} else {
 			float value = res.getFloat("value");
+			long time = System.currentTimeMillis();
 
-			this.values.addFirst(new DataPointImpl(value));
+			this.values.addFirst(new DataPoint(value, time));
+
 			if (this.values.size() > MAX_SIZE) {
 				this.values.removeLast();
 			}
 
-			log(value + "");
+			log("New value: " + value + " on " + new Date(time));
 			response.setStatusCode(200).end();
-			EdgeMsgEvent umidityEvent = new EdgeMsgEventImpl(value);
-			this.notifyEvent(umidityEvent);
-
 		}
 	}
 
 	private void handleGetData(RoutingContext routingContext) {
 		JsonArray arr = new JsonArray();
-		for (ServerDataPoint p : this.values) {
+		for (DataPoint p : this.values) {
 			JsonObject data = new JsonObject();
-			data.put("value", p.getValue());
+			data.put("time", 123456);
+			data.put("value", 987654);
 			arr.add(data);
+			try {
+				Thread.sleep(3000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		routingContext.response().putHeader("content-type", "application/json").end(arr.encodePrettily());
 	}
@@ -84,28 +83,9 @@ public class ObservableDataService extends AbstractVerticle implements Observabl
 		System.out.println("[DATA SERVICE] " + msg);
 	}
 
-	@Override
-	public void addObserver(EventObserver obs) {
-		synchronized (this.observers) {
-			this.observers.add(obs);
-		}
-
+	public static void main(String[] args) {
+		Vertx vertx = Vertx.vertx();
+		DataService service = new DataService(80);
+		vertx.deployVerticle(service);
 	}
-
-	@Override
-	public void removeObserver(EventObserver obs) {
-		synchronized (this.observers) {
-			this.observers.remove(obs);
-		}
-
-	}
-
-	private void notifyEvent(final Event ev) {
-		synchronized (this.observers) {
-			for (EventObserver obs : this.observers) {
-				obs.notifyEvent(ev);
-			}
-		}
-	}
-
 }
