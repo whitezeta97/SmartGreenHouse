@@ -2,9 +2,12 @@ package eventloop;
 
 import afms.SghAfsm;
 import afms.SmartGreenHouseAFSM;
+import events.ControllerMsgEvent;
+import events.EdgeMsgEvent;
 import events.Event;
+import events.TickEvent;
 import io.vertx.core.Vertx;
-import observable.serverdataservice.ObservableSghDataService;
+import observable.serverdataservice.ObservableSghDataServiceImpl;
 import observables.msgservice.ObservableMsgService;
 import observables.msgservice.ObservableMsgServiceImpl;
 import observables.timer.ObservableTimer;
@@ -24,17 +27,29 @@ public class EventLoopImpl extends AbstractEventLoop {
 		timer.addObserver(this);
 
 		Vertx vertx = Vertx.vertx();
-		ObservableSghDataService edgeDataService = new ObservableSghDataService(80);
+		ObservableSghDataServiceImpl edgeDataService = new ObservableSghDataServiceImpl(80);
 		edgeDataService.addObserver(this);
 		vertx.deployVerticle(edgeDataService);
 
-		this.asincFiniteStateMachine = new SmartGreenHouseAFSM(timer, msgService);
+		this.asincFiniteStateMachine = new SmartGreenHouseAFSM(timer, msgService, edgeDataService);
 
 	}
 
 	@Override
 	protected void processEvent(Event ev) {
-		this.asincFiniteStateMachine.performAction(ev);
+		try {
+			if (ev instanceof ControllerMsgEvent) {
+				this.asincFiniteStateMachine.manageControllerMsgEvent((ControllerMsgEvent) ev);
+			} else if (ev instanceof EdgeMsgEvent) {
+				this.asincFiniteStateMachine.manageEdgeMsgEvent((EdgeMsgEvent) ev);
+			} else if (ev instanceof TickEvent) {
+				this.asincFiniteStateMachine.manageTimerTickEvent();
+			}
+
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+
 	}
 
 	@Override

@@ -1,0 +1,7 @@
+package utilities;
+
+public enum MessageTypes {
+
+	FIRST_MESSAGE, SERVER_STARTED, SGH_STATE, UMIDITY, IS_WATERING, WATERING_LIST, MANUALMODE, WARNING,
+
+}

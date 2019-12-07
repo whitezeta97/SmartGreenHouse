@@ -1,18 +1,16 @@
 package afms;
 
 import events.ControllerMsgEvent;
-import events.Event;
-import events.TickEvent;
+import events.EdgeMsgEvent;
 
 public interface SghAfsm {
 
-	void setManualMode(String msg);
+	void manageControllerMsgEvent(ControllerMsgEvent ev);
 
-	void manageControllerMsgEvent(String msg);
+	void manageEdgeMsgEvent(EdgeMsgEvent ev);
 
-	void manageTimerTickEvent(TickEvent ev);
+	void manageTimerTickEvent();
 
 	boolean isManualMode();
 
-	void performAction(Event ev);
 }
