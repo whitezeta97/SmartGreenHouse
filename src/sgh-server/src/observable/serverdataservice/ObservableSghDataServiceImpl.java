@@ -78,11 +78,17 @@ public class ObservableSghDataServiceImpl extends AbstractVerticle implements Ob
 		arr.add(new JsonObject().put(MessageTypes.SGH_STATE.toString(), this.currentState));
 
 		for (Pair<Float, Date> elem : this.umidityValuesList) {
-			arr.add(new JsonObject().put(MessageTypes.UMIDITY.toString(), elem));
+			arr.add(new JsonObject()
+					.put(MessageTypes.UMIDITY.toString(),
+							new JsonObject().put(MessageTypes.UMIDITY_VALUE.toString(), elem.getX()))
+					.put(MessageTypes.UMIDITY_DATE.toString(), elem.getY().toString()));
 		}
 
 		for (Pair<Long, Date> elem : this.wateringsList) {
-			arr.add(new JsonObject().put(MessageTypes.WATERING_LIST.toString(), elem));
+			arr.add(new JsonObject()
+					.put(MessageTypes.WATERING_LIST.toString(),
+							new JsonObject().put(MessageTypes.WATERING_DURATION.toString(), elem.getX()))
+					.put(MessageTypes.WATERING_DATE.toString(), elem.getY().toString()));
 		}
 
 		for (Date elem : this.warningsList) {
