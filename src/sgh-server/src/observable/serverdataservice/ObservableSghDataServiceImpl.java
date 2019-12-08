@@ -92,7 +92,7 @@ public class ObservableSghDataServiceImpl extends AbstractVerticle implements Ob
 		}
 
 		for (Date elem : this.warningsList) {
-			arr.add(new JsonObject().put(MessageTypes.WARNING.toString(), elem));
+			arr.add(new JsonObject().put(MessageTypes.WARNING.toString(), elem.toString()));
 		}
 
 		routingContext.response().putHeader("content-type", "application/json").end(arr.encodePrettily());

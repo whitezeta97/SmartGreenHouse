@@ -1,5 +1,6 @@
 package controller;
 
+import java.awt.TrayIcon.MessageType;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -21,9 +22,9 @@ public class SghClientImpl extends Thread implements SghClient {
 	private volatile boolean isWatering;
 	private volatile String currentState;
 
-	private volatile List<Pair<Float, Date>> umidityValuesList = new LinkedList<>();
-	private volatile List<Pair<Long, Date>> wateringsList = new LinkedList<>();
-	private volatile List<Date> warningsList = new LinkedList<>();
+	private volatile List<Pair<Float, String>> umidityValuesList = new LinkedList<>();
+	private volatile List<Pair<Long, String>> wateringsList = new LinkedList<>();
+	private volatile List<String> warningsList = new LinkedList<>();
 
 	public SghClientImpl(final String host, final int port) {
 		this.host = host;
@@ -74,19 +75,26 @@ public class SghClientImpl extends Thread implements SghClient {
 
 					} else if (cacca.containsKey(MessageTypes.UMIDITY.toString())) {
 						this.umidityValuesList.clear();
-						//JsonObject niente = cacca.get;
 
-						this.umidityValuesList.add((Pair<Float, Date>) cacca.getValue(MessageTypes.UMIDITY.toString()));
+						JsonObject niente = cacca.getJsonObject(MessageTypes.UMIDITY.toString());
+
+						this.umidityValuesList
+								.add(new Pair<Float, String>(niente.getFloat(MessageTypes.UMIDITY_VALUE.toString()),
+										niente.getString(MessageTypes.UMIDITY_DATE.toString())));
 
 					} else if (cacca.containsKey(MessageTypes.WARNING.toString())) {
 						this.warningsList.clear();
-						this.warningsList.add((Date) cacca.getValue(MessageTypes.WARNING.toString()));
+
+						this.warningsList.add(cacca.getString(MessageTypes.WARNING.toString()));
 
 					} else if (cacca.containsKey(MessageTypes.WATERING_LIST.toString())) {
 						this.wateringsList.clear();
-						this.wateringsList
-								.add((Pair<Long, Date>) cacca.getValue(MessageTypes.WATERING_LIST.toString()));
 
+						JsonObject niente = cacca.getJsonObject(MessageTypes.UMIDITY.toString());
+
+						this.wateringsList
+								.add(new Pair<Long, String>(niente.getLong(MessageTypes.WATERING_DURATION.toString()),
+										niente.getString(MessageTypes.WATERING_DATE.toString())));
 					}
 				}
 
@@ -110,17 +118,17 @@ public class SghClientImpl extends Thread implements SghClient {
 	}
 
 	@Override
-	public List<Pair<Float, Date>> getUmidityValuesList() {
+	public List<Pair<Float, String>> getUmidityValuesList() {
 		return umidityValuesList;
 	}
 
 	@Override
-	public List<Pair<Long, Date>> getWateringsList() {
+	public List<Pair<Long, String>> getWateringsList() {
 		return wateringsList;
 	}
 
 	@Override
-	public List<Date> getWarningsList() {
+	public List<String> getWarningsList() {
 		return warningsList;
 	}
 }

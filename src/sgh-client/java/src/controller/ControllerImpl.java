@@ -11,7 +11,7 @@ public class ControllerImpl implements Controller {
 
 	public ControllerImpl() {
 		this.gui = new GuiImpl();
-		this.sghClient = new SghClientImpl("53c28bac.ngrok.io", 80);
+		this.sghClient = new SghClientImpl("ce891104.ngrok.io", 80);
 	}
 
 	private void boh() {

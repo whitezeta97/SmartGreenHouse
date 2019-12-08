@@ -14,9 +14,9 @@ public interface SghClient {
 
 	public String getCurrentState();
 
-	public List<Pair<Float, Date>> getUmidityValuesList();
+	public List<Pair<Float, String>> getUmidityValuesList();
 
-	public List<Pair<Long, Date>> getWateringsList();
+	public List<Pair<Long, String>> getWateringsList();
 
-	public List<Date> getWarningsList();
+	public List<String> getWarningsList();
 }
