@@ -6,7 +6,7 @@ public class Init extends AbstractVerticle {
 
 	public static void main(String[] args) {
 
-		final Controller controller = new ControllerImpl();
+		new ControllerImpl();
 
 	}
 

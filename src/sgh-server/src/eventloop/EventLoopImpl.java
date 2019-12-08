@@ -27,11 +27,11 @@ public class EventLoopImpl extends AbstractEventLoop {
 		timer.addObserver(this);
 
 		Vertx vertx = Vertx.vertx();
-		ObservableSghDataServiceImpl edgeDataService = new ObservableSghDataServiceImpl(80);
-		edgeDataService.addObserver(this);
-		vertx.deployVerticle(edgeDataService);
+		ObservableSghDataServiceImpl serverDataService = new ObservableSghDataServiceImpl(80);
+		serverDataService.addObserver(this);
+		vertx.deployVerticle(serverDataService);
 
-		this.asincFiniteStateMachine = new SmartGreenHouseAFSM(timer, msgService, edgeDataService);
+		this.asincFiniteStateMachine = new SmartGreenHouseAFSM(timer, msgService, serverDataService);
 
 	}
 

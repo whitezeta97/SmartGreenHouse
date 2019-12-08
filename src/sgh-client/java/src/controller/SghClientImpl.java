@@ -1,7 +1,5 @@
 package controller;
 
-import java.awt.TrayIcon.MessageType;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -11,7 +9,6 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import utilities.MessageTypes;
 import utilities.Pair;
-import utilities.SghStates;
 
 public class SghClientImpl extends Thread implements SghClient {
 	private String host;
@@ -59,47 +56,47 @@ public class SghClientImpl extends Thread implements SghClient {
 
 				JsonArray arr = bodyHandler.toJsonArray();
 
+				this.umidityValuesList.clear();
+				this.warningsList.clear();
+				this.wateringsList.clear();
+
 				for (int i = 0; i < arr.size(); i++) {
-					JsonObject cacca = arr.getJsonObject(i);
+					JsonObject receivedJSonObject = arr.getJsonObject(i);
 
-					if (cacca.containsKey(MessageTypes.FIRST_MESSAGE.toString())) {
+					if (receivedJSonObject.containsKey(MessageTypes.FIRST_MESSAGE.toString())) {
 
-					} else if (cacca.containsKey(MessageTypes.IS_WATERING.toString())) {
-						this.isWatering = cacca.getBoolean(MessageTypes.IS_WATERING.toString());
+					} else if (receivedJSonObject.containsKey(MessageTypes.IS_WATERING.toString())) {
+						this.isWatering = receivedJSonObject.getBoolean(MessageTypes.IS_WATERING.toString());
 
-					} else if (cacca.containsKey(MessageTypes.MANUALMODE.toString())) {
-						this.manualMode = cacca.getBoolean(MessageTypes.MANUALMODE.toString());
+					} else if (receivedJSonObject.containsKey(MessageTypes.MANUALMODE.toString())) {
+						this.manualMode = receivedJSonObject.getBoolean(MessageTypes.MANUALMODE.toString());
 
-					} else if (cacca.containsKey(MessageTypes.SGH_STATE.toString())) {
-						this.currentState = (String) cacca.getValue(MessageTypes.SGH_STATE.toString());
+					} else if (receivedJSonObject.containsKey(MessageTypes.SGH_STATE.toString())) {
+						this.currentState = (String) receivedJSonObject.getValue(MessageTypes.SGH_STATE.toString());
 
-					} else if (cacca.containsKey(MessageTypes.UMIDITY.toString())) {
-						this.umidityValuesList.clear();
+					} else if (receivedJSonObject.containsKey(MessageTypes.UMIDITY.toString())) {
+						JsonObject innerJSonArray = receivedJSonObject.getJsonObject(MessageTypes.UMIDITY.toString());
 
-						JsonObject niente = cacca.getJsonObject(MessageTypes.UMIDITY.toString());
+						this.umidityValuesList.add(
+								new Pair<Float, String>(innerJSonArray.getFloat(MessageTypes.UMIDITY_VALUE.toString()),
+										innerJSonArray.getString(MessageTypes.UMIDITY_DATE.toString())));
 
-						this.umidityValuesList
-								.add(new Pair<Float, String>(niente.getFloat(MessageTypes.UMIDITY_VALUE.toString()),
-										niente.getString(MessageTypes.UMIDITY_DATE.toString())));
+					} else if (receivedJSonObject.containsKey(MessageTypes.WARNING.toString())) {
+						this.warningsList.add(receivedJSonObject.getString(MessageTypes.WARNING.toString()));
 
-					} else if (cacca.containsKey(MessageTypes.WARNING.toString())) {
-						this.warningsList.clear();
+					} else if (receivedJSonObject.containsKey(MessageTypes.WATERING_LIST.toString())) {
+						JsonObject innerJSonArray = receivedJSonObject
+								.getJsonObject(MessageTypes.WATERING_LIST.toString());
 
-						this.warningsList.add(cacca.getString(MessageTypes.WARNING.toString()));
-
-					} else if (cacca.containsKey(MessageTypes.WATERING_LIST.toString())) {
-						this.wateringsList.clear();
-
-						JsonObject niente = cacca.getJsonObject(MessageTypes.UMIDITY.toString());
-
-						this.wateringsList
-								.add(new Pair<Long, String>(niente.getLong(MessageTypes.WATERING_DURATION.toString()),
-										niente.getString(MessageTypes.WATERING_DATE.toString())));
+						this.wateringsList.add(new Pair<Long, String>(
+								innerJSonArray.getLong(MessageTypes.WATERING_DURATION.toString()),
+								innerJSonArray.getString(MessageTypes.WATERING_DATE.toString())));
 					}
 				}
 
 			});
 		}).putHeader("content-type", "application/json").end();
+
 	}
 
 	@Override
