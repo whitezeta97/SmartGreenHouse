@@ -1,10 +1,8 @@
-package controller;
+package clientdataservice;
 
-import java.util.Date;
 import java.util.List;
 
 import utilities.Pair;
-import utilities.SghStates;
 
 public interface SghClient {
 
