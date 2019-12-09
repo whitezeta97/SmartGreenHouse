@@ -13,7 +13,7 @@ public class ControllerImpl extends Thread implements Controller {
 
 	public ControllerImpl() {
 		this.gui = new GuiImpl();
-		this.sghClient = new SghClientImpl("f3972e00.ngrok.io", 80);
+		this.sghClient = new SghClientImpl("fc8aab15.ngrok.io", 80);
 		this.start();
 	}
 

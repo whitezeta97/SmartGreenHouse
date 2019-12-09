@@ -18,14 +18,38 @@ public class GuiImpl implements Gui {
 	private volatile boolean isWatering;
 	private volatile String currentState;
 
-	private volatile List<Pair<Float, String>> umidityValuesList = new LinkedList<>();
-	private volatile List<Pair<Long, String>> wateringsList = new LinkedList<>();
-	private volatile List<String> warningsList = new LinkedList<>();
+	private volatile List<Pair<Float, String>> umidityValuesList;
+	private volatile List<Pair<Long, String>> wateringsList;
+	private volatile List<String> warningsList;
 
-	private final DefaultListModel<String> umidityList = new DefaultListModel<>();
-	private final JList<String> umidityJList = new JList(umidityList);
+	private DefaultListModel<String> viewUmidityList;
+	private JList<String> umidityJList;
+	private DefaultListModel<String> viewWateringsList;
+	private JList<String> wateringsJList;
+	private DefaultListModel<String> viewWarningsList;
+	private JList<String> warningsJList;
 
 	public GuiImpl() {
+
+		this.umidityValuesList = new LinkedList<>();
+		this.wateringsList = new LinkedList<>();
+		this.warningsList = new LinkedList<>();
+
+		this.viewUmidityList = new DefaultListModel<>();
+		this.umidityJList = new JList<String>(this.viewUmidityList);
+		
+		this.viewWateringsList = new DefaultListModel<>();
+		this.wateringsJList = new JList<String>(this.viewWateringsList);
+		
+		this.viewWarningsList = new DefaultListModel<>();
+		this.warningsJList = new JList<String>(this.viewWarningsList);
+
+		JScrollPane jScrollPaneUmidityList = new JScrollPane(this.umidityJList);
+		jScrollPaneUmidityList.setAutoscrolls(true);
+		JScrollPane jScrollPaneWateringsList = new JScrollPane(this.wateringsJList);
+		jScrollPaneWateringsList.setAutoscrolls(true);
+		JScrollPane jScrollPaneWarningsList = new JScrollPane(this.warningsJList);
+		jScrollPaneWarningsList.setAutoscrolls(true);
 
 		final BorderLayout borderLayout = new BorderLayout();
 		borderLayout.setHgap(10);
@@ -33,11 +57,10 @@ public class GuiImpl implements Gui {
 
 		JPanel jPanel = new JPanel(borderLayout);
 
-		jPanel.add(umidityJList, BorderLayout.NORTH);
+		jPanel.add(jScrollPaneWarningsList, BorderLayout.EAST);
+		jPanel.add(jScrollPaneUmidityList, BorderLayout.CENTER);
+		jPanel.add(jScrollPaneWateringsList, BorderLayout.WEST);
 		jPanel.add(new JList<>(), BorderLayout.SOUTH);
-		jPanel.add(new JButton(" Center "), BorderLayout.CENTER);
-		jPanel.add(new JButton(" East "), BorderLayout.EAST);
-		jPanel.add(new JButton(" WestWest "), BorderLayout.WEST);
 		jPanel.setVisible(true);
 
 		JFrame jf = new JFrame();
@@ -60,13 +83,33 @@ public class GuiImpl implements Gui {
 	@Override
 	public void viewUpdate() {
 
-		if (this.umidityValuesList.size() > 0) {
-			this.umidityJList.clearSelection();
-			this.umidityList.clear();
-			for (Pair<Float, String> elem : this.umidityValuesList) {
-				this.umidityList.addElement(elem.getX().toString() + "   " + elem.getY().toString());
-			}
+		this.umidityValuesList.stream().map(i -> i.getX().toString() + " at " + i.getY().toString())
+				.filter(i -> !this.umidityJList.getModel().toString().contains(i)).iterator()
+				.forEachRemaining(i -> this.viewUmidityList.addElement(i));
 
+		int lastIndex = this.umidityJList.getModel().getSize() - 1;
+		if (lastIndex >= 0) {
+			this.umidityJList.ensureIndexIsVisible(lastIndex);
+			this.umidityJList.setSelectedIndex(lastIndex);
+		}
+
+		this.wateringsList.stream().map(i -> "duration:" + i.getX() / 60 + "s  " + i.getY().toString())
+				.filter(i -> !this.wateringsJList.getModel().toString().contains(i)).iterator()
+				.forEachRemaining(i -> this.viewWateringsList.addElement(i));
+
+		lastIndex = this.wateringsJList.getModel().getSize() - 1;
+		if (lastIndex >= 0) {
+			this.wateringsJList.ensureIndexIsVisible(lastIndex);
+			this.wateringsJList.setSelectedIndex(lastIndex);
+		}
+
+		this.warningsList.stream().filter(i -> !this.warningsJList.getModel().toString().contains(i)).iterator()
+				.forEachRemaining(i -> this.viewWarningsList.addElement(i));
+
+		lastIndex = this.warningsJList.getModel().getSize() - 1;
+		if (lastIndex >= 0) {
+			this.warningsJList.ensureIndexIsVisible(lastIndex);
+			this.warningsJList.setSelectedIndex(lastIndex);
 		}
 
 	}

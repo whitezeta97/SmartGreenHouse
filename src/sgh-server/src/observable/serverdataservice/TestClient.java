@@ -9,7 +9,7 @@ public class TestClient extends AbstractVerticle {
 
 	public static void main(String[] args) {
 
-		String host = "f3972e00.ngrok.io";
+		String host = "fc8aab15.ngrok.io";
 		int port = 80;
 
 		Vertx vertx = Vertx.vertx();
