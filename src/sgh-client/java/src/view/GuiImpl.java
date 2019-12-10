@@ -2,7 +2,6 @@ package view;
 
 import javax.swing.*;
 
-import javafx.stage.PopupWindow.AnchorLocation;
 import utilities.Pair;
 
 import java.awt.*;
@@ -79,24 +78,28 @@ public class GuiImpl implements Gui {
 		final JPanel jPanel = new JPanel(gridLayout);
 		final GridBagConstraints constr = new GridBagConstraints();
 
-		//constr.gridwidth = GridBagConstraints.RELATIVE;
-		//constr.gridheight = GridBagConstraints.RELATIVE;
-		//constr.fill = GridBagConstraints.HORIZONTAL;
-		//constr.weightx = 3.0;
-		//constr.weighty = 3.0;
+		// constr.gridx = 0;
+		// constr.gridy = 0;
+		constr.fill = GridBagConstraints.BOTH;
+		constr.weightx = 1.0;
+		constr.weighty = 1.0;
 
-		constr.insets = new Insets(10, 10, 70, 10);
+		constr.anchor = GridBagConstraints.CENTER;
+		constr.insets = new Insets(10, 10, 30, 10);
 		constr.gridx = 0;
 		constr.gridy = 0;
+		this.manualModeLabel.setHorizontalAlignment(JLabel.CENTER);
 		jPanel.add(this.manualModeLabel, constr);
 		constr.gridx = 1;
 		constr.gridy = 0;
+		this.isWateringLabel.setHorizontalAlignment(JLabel.CENTER);
 		jPanel.add(this.isWateringLabel, constr);
 		constr.gridx = 2;
 		constr.gridy = 0;
+		this.currentStateLabel.setHorizontalAlignment(JLabel.CENTER);
 		jPanel.add(this.currentStateLabel, constr);
 
-		constr.anchor = GridBagConstraints.LINE_START;
+		constr.anchor = GridBagConstraints.FIRST_LINE_END;
 		constr.insets = new Insets(10, 10, 0, 10);
 		constr.gridx = 0;
 		constr.gridy = 1;
@@ -130,9 +133,11 @@ public class GuiImpl implements Gui {
 		constr.gridy = 2;
 		jPanel.add(jScrollPaneWateringsList, constr);
 
-		constr.gridx = 1;
+		constr.gridx = 0;
 		constr.gridy = 3;
+		constr.gridwidth = 3;
 		constr.insets = new Insets(40, 10, 10, 10);
+		this.lastUpdateFromServerLabel.setHorizontalAlignment(JLabel.CENTER);
 		jPanel.add(this.lastUpdateFromServerLabel, constr);
 
 		jPanel.setVisible(true);
@@ -160,7 +165,7 @@ public class GuiImpl implements Gui {
 		final int lastIndex = this.umidityJList.getModel().getSize() - 1;
 
 		if (lastIndex >= 0) {
-			// jList.ensureIndexIsVisible(lastIndex);
+			jList.ensureIndexIsVisible(lastIndex);
 			jList.setSelectedIndex(lastIndex);
 		}
 	}
@@ -205,7 +210,6 @@ public class GuiImpl implements Gui {
 		} else {
 			this.lastUpdateFromServerLabel.setText("LAST UPDATE FROM SERVER ON: ---");
 		}
-		
 
 	}
 
