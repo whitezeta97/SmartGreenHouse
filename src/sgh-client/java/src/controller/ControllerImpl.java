@@ -13,7 +13,7 @@ public class ControllerImpl extends Thread implements Controller {
 
 	public ControllerImpl() {
 		this.gui = new GuiImpl();
-		this.sghClient = new SghClientImpl("fc8aab15.ngrok.io", 80);
+		this.sghClient = new SghClientImpl("89fe4a4b.ngrok.io", 80);
 		this.start();
 	}
 
@@ -24,6 +24,7 @@ public class ControllerImpl extends Thread implements Controller {
 		this.gui.setWarningsList(this.sghClient.getWarningsList());
 		this.gui.setWatering(this.sghClient.isWatering());
 		this.gui.setWateringsList(this.sghClient.getWateringsList());
+		this.gui.setLastUpdateFromServer(this.sghClient.getLastUpdateFromServer());
 		this.gui.viewUpdate();
 	}
 

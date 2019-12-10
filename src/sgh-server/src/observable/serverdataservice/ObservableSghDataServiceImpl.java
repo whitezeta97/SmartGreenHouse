@@ -32,7 +32,7 @@ public class ObservableSghDataServiceImpl extends AbstractVerticle implements Ob
 	private volatile boolean isWatering;
 	private volatile SghStates currentState;
 	private volatile List<Pair<Float, Date>> umidityValuesList = new LinkedList<>();
-	private volatile List<Pair<Long, Date>> wateringsList = new LinkedList<>();
+	private volatile List<Pair<Float, Date>> wateringsList = new LinkedList<>();
 	private volatile List<Date> warningsList = new LinkedList<>();
 
 	private LinkedList<EventObserver> observers;
@@ -83,9 +83,10 @@ public class ObservableSghDataServiceImpl extends AbstractVerticle implements Ob
 							.put(MessageTypes.UMIDITY_DATE.toString(), elem.getY().toString())));
 		}
 
-		for (Pair<Long, Date> elem : this.wateringsList) {
+		for (Pair<Float, Date> elem : this.wateringsList) {
+			final float durationInSeconds = elem.getX() / 1000;
 			arr.add(new JsonObject().put(MessageTypes.WATERING_LIST.toString(),
-					new JsonObject().put(MessageTypes.WATERING_DURATION.toString(), elem.getX())
+					new JsonObject().put(MessageTypes.WATERING_DURATION.toString(), durationInSeconds)
 							.put(MessageTypes.WATERING_DATE.toString(), elem.getY().toString())));
 		}
 
@@ -149,7 +150,7 @@ public class ObservableSghDataServiceImpl extends AbstractVerticle implements Ob
 	}
 
 	@Override
-	public synchronized void setWateringsList(List<Pair<Long, Date>> wateringsList) {
+	public synchronized void setWateringsList(List<Pair<Float, Date>> wateringsList) {
 		this.wateringsList = wateringsList;
 	}
 

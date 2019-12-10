@@ -1,5 +1,6 @@
 package clientdataservice;
 
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -20,8 +21,9 @@ public class SghClientImpl extends Thread implements SghClient {
 	private volatile String currentState;
 
 	private volatile List<Pair<Float, String>> umidityValuesList = new LinkedList<>();
-	private volatile List<Pair<Long, String>> wateringsList = new LinkedList<>();
+	private volatile List<Pair<Float, String>> wateringsList = new LinkedList<>();
 	private volatile List<String> warningsList = new LinkedList<>();
+	private volatile Date lastUpdateFromServer;
 
 	public SghClientImpl(final String host, final int port) {
 		this.host = host;
@@ -59,6 +61,8 @@ public class SghClientImpl extends Thread implements SghClient {
 				this.umidityValuesList.clear();
 				this.warningsList.clear();
 				this.wateringsList.clear();
+				
+				this.lastUpdateFromServer = new Date();
 
 				for (int i = 0; i < arr.size(); i++) {
 					JsonObject receivedJSonObject = arr.getJsonObject(i);
@@ -88,8 +92,8 @@ public class SghClientImpl extends Thread implements SghClient {
 						JsonObject innerJSonArray = receivedJSonObject
 								.getJsonObject(MessageTypes.WATERING_LIST.toString());
 
-						this.wateringsList.add(new Pair<Long, String>(
-								innerJSonArray.getLong(MessageTypes.WATERING_DURATION.toString()),
+						this.wateringsList.add(new Pair<Float, String>(
+								innerJSonArray.getFloat(MessageTypes.WATERING_DURATION.toString()),
 								innerJSonArray.getString(MessageTypes.WATERING_DATE.toString())));
 					}
 				}
@@ -101,31 +105,36 @@ public class SghClientImpl extends Thread implements SghClient {
 
 	@Override
 	public boolean isManualMode() {
-		return manualMode;
+		return this.manualMode;
 	}
 
 	@Override
 	public boolean isWatering() {
-		return isWatering;
+		return this.isWatering;
 	}
 
 	@Override
 	public String getCurrentState() {
-		return currentState;
+		return this.currentState;
 	}
 
 	@Override
 	public List<Pair<Float, String>> getUmidityValuesList() {
-		return umidityValuesList;
+		return this.umidityValuesList;
 	}
 
 	@Override
-	public List<Pair<Long, String>> getWateringsList() {
-		return wateringsList;
+	public List<Pair<Float, String>> getWateringsList() {
+		return this.wateringsList;
 	}
 
 	@Override
 	public List<String> getWarningsList() {
-		return warningsList;
+		return this.warningsList;
+	}
+	
+	@Override
+	public Date getLastUpdateFromServer() {
+		return this.lastUpdateFromServer;
 	}
 }

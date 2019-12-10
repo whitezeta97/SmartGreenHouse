@@ -27,7 +27,7 @@ public class SmartGreenHouseAFSM implements SghAfsm {
 	private boolean isWatering;
 	private SghStates currentState;
 	private List<Pair<Float, Date>> umidityValuesList;
-	private List<Pair<Long, Date>> wateringsList;
+	private List<Pair<Float, Date>> wateringsList;
 	private List<Date> warningsList;
 
 	private long wateringStartedTime;
@@ -91,8 +91,8 @@ public class SmartGreenHouseAFSM implements SghAfsm {
 
 			this.wateringStoppedTime = System.currentTimeMillis();
 
-			long wateringDuration = this.wateringStoppedTime - this.wateringStartedTime;
-			this.wateringsList.add(new Pair<>(wateringDuration, new Date()));
+			this.wateringsList
+					.add(new Pair<>(Float.valueOf(this.wateringStoppedTime - this.wateringStartedTime), new Date()));
 
 			this.serverDataService.setWatering(this.isWatering);
 			this.serverDataService.setWateringsList(this.wateringsList);
@@ -157,7 +157,8 @@ public class SmartGreenHouseAFSM implements SghAfsm {
 		this.currentState = SghStates.PUMP_OFF;
 		this.warningsList.add(new Date());
 		this.wateringStoppedTime = System.currentTimeMillis();
-		this.wateringsList.add(new Pair<Long, Date>(this.wateringStoppedTime - this.wateringStartedTime, new Date()));
+		this.wateringsList.add(
+				new Pair<Float, Date>(Float.valueOf(this.wateringStoppedTime - this.wateringStartedTime), new Date()));
 
 		this.msgService.sendMsg(this.currentState.toString());
 

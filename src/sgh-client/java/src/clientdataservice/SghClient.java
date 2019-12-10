@@ -1,20 +1,23 @@
 package clientdataservice;
 
+import java.util.Date;
 import java.util.List;
 
 import utilities.Pair;
 
 public interface SghClient {
 
-	public boolean isManualMode();
+	boolean isManualMode();
 
-	public boolean isWatering();
+	boolean isWatering();
 
-	public String getCurrentState();
+	String getCurrentState();
 
-	public List<Pair<Float, String>> getUmidityValuesList();
+	List<Pair<Float, String>> getUmidityValuesList();
 
-	public List<Pair<Long, String>> getWateringsList();
+	List<Pair<Float, String>> getWateringsList();
 
-	public List<String> getWarningsList();
+	List<String> getWarningsList();
+
+	Date getLastUpdateFromServer();
 }

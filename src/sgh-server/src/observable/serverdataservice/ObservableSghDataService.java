@@ -16,7 +16,7 @@ public interface ObservableSghDataService {
 
 	void setUmidityValuesList(List<Pair<Float, Date>> umidityValuesList);
 
-	void setWateringsList(List<Pair<Long, Date>> wateringsList);
+	void setWateringsList(List<Pair<Float, Date>> wateringsList);
 
 	void setWarningsList(List<Date> warningsList);
 

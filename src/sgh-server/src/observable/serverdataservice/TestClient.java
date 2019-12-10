@@ -9,7 +9,7 @@ public class TestClient extends AbstractVerticle {
 
 	public static void main(String[] args) {
 
-		String host = "fc8aab15.ngrok.io";
+		String host = "89fe4a4b.ngrok.io";
 		int port = 80;
 
 		Vertx vertx = Vertx.vertx();
@@ -26,7 +26,7 @@ public class TestClient extends AbstractVerticle {
 		
 		
 		try {
-			Thread.sleep(10000);
+			Thread.sleep(5500);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
