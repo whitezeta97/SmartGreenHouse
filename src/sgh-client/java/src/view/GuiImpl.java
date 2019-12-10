@@ -99,6 +99,8 @@ public class GuiImpl implements Gui {
 		this.currentStateLabel.setHorizontalAlignment(JLabel.CENTER);
 		jPanel.add(this.currentStateLabel, constr);
 
+		constr.weightx = 0.0;
+		constr.weighty = 0.0;
 		constr.anchor = GridBagConstraints.FIRST_LINE_END;
 		constr.insets = new Insets(10, 10, 0, 10);
 		constr.gridx = 0;
@@ -121,6 +123,8 @@ public class GuiImpl implements Gui {
 		wateringsListTitle.setForeground(Color.blue);
 		jPanel.add(wateringsListTitle, constr);
 
+		constr.weightx = 1.0;
+		constr.weighty = 1.0;
 		constr.anchor = GridBagConstraints.CENTER;
 		constr.insets = new Insets(0, 10, 10, 10);
 		constr.gridx = 0;
