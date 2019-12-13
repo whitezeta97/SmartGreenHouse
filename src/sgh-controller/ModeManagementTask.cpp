@@ -21,17 +21,21 @@ void ModeManagementTask::init(int period) {
 }
 
 void ModeManagementTask::changeMode() {
+    char message[MAX_LENGTH_MESSAGE];
+    strcpy(message, AUTOMATIC_MODE);
     if (mode == AUTOMATIC) {
         mode = MANUAL;
-        pumps = OFF;
-        flow = MINIMUM;
         this->autoLed->turnOff();
         this->manualLed->turnOn();
+        strcpy(message, pumps == ON ? PUMPS_ON : PUMPS_OFF);
     } else {
         mode = AUTOMATIC;
+        pumps = OFF;
         this->manualLed->turnOff();
         this->autoLed->turnOn();
+        strcpy(message, AUTOMATIC_MODE);
     }
+    this->bluetooth->sentData(message);
 }
 
 void ModeManagementTask::tick() {
@@ -60,7 +64,5 @@ void ModeManagementTask::tick() {
         }
     } else if (mode == MANUAL) {
         this->changeMode();
-        strcpy(message, AUTOMATIC_MODE);
-        this->bluetooth->sentData(message);
     }
 }
