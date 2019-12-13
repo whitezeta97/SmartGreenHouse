@@ -25,7 +25,8 @@ private:
 
     void changeMode();
 public:
-    ModeManagementTask(DistanceDetector* distanceDetector, Bluetooth* bluetooth, Led* autoLed, Led* manualLed);
+    ModeManagementTask(DistanceDetector* distanceDetector, Bluetooth* bluetooth,
+        Led* autoLed, Led* manualLed);
     void init(int period);
 	void tick();
 };

@@ -4,7 +4,8 @@
 #include "Flow.h"
 #include "string.h"
 
-ModeManagementTask::ModeManagementTask(DistanceDetector* distanceDetector, Bluetooth* bluetooth, Led* autoLed, Led* manualLed) {
+ModeManagementTask::ModeManagementTask(DistanceDetector* distanceDetector,
+        Bluetooth* bluetooth, Led* autoLed, Led* manualLed) {
     this->distanceDetector = distanceDetector;
     this->bluetooth = bluetooth;
     this->autoLed = autoLed;
