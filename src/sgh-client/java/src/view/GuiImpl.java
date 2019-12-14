@@ -7,8 +7,10 @@ import controller.Controller;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.concurrent.Semaphore;
 
 public class GuiImpl extends Thread implements Gui {
+	private static final int SLEEP_TIME = 60;
 
 	private DefaultListModel<String> viewUmidityList;
 	private DefaultListModel<String> viewWateringsList;
@@ -29,10 +31,12 @@ public class GuiImpl extends Thread implements Gui {
 	private final Font listsFont = new Font("Calibri", Font.BOLD, 17);
 
 	private final Controller controller;
+	private volatile Semaphore mutex;
 
-	public GuiImpl(final Controller controller) {
+	public GuiImpl(final Controller controller, Semaphore mutex) {
 
 		this.controller = controller;
+		this.mutex = mutex;
 
 		this.viewUmidityList = new DefaultListModel<>();
 		this.umidityJList = new JList<String>(this.viewUmidityList);
@@ -218,7 +222,20 @@ public class GuiImpl extends Thread implements Gui {
 	@Override
 	public void run() {
 		while (true) {
-			this.viewUpdate();
+			try {
+				this.mutex.acquire();
+				this.viewUpdate();
+				this.mutex.release();
+			} catch (InterruptedException e) {
+				this.mutex.release();
+				e.printStackTrace();
+			}
+
+			try {
+				Thread.sleep(SLEEP_TIME);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 
 		}
 	}

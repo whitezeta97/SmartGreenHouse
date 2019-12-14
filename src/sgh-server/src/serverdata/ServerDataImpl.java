@@ -25,7 +25,7 @@ public class ServerDataImpl implements ServerData {
 
 	private <T> void manageListFull(final BlockingQueue<T> list) {
 		if (list.size() >= ServerDataImpl.LIST_SIZE) {
-			list.remove(0);
+			list.poll();
 		}
 	}
 

@@ -65,9 +65,10 @@ public class SmartGreenHouseAFSM implements SghAfsm {
 			System.out.println("SERVER: Watering STOPPED");
 
 			this.wateringStoppedTime = System.currentTimeMillis();
-			
+
 			this.serverData.setCurrentState(SghStates.PUMP_OFF);
 			this.serverData.addWateringsListElement(this.wateringStoppedTime - this.wateringStartedTime, new Date());
+			System.out.println("FIGOLA: " + this.serverData.getWateringsList().element().getX());
 		}
 
 		this.msgService.sendMsg(this.serverData.getCurrentState().toString());

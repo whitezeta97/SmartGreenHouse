@@ -61,7 +61,7 @@ public class EventLoopImpl extends AbstractEventLoop {
 	public boolean notifyEvent(final Event ev) {
 
 		if (this.eventQueue.remainingCapacity() == 0) {
-			this.eventQueue.remove();
+			this.eventQueue.poll();
 		}
 
 		return this.eventQueue.offer(ev);
