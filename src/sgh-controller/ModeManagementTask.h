@@ -17,11 +17,13 @@ private:
     #define MINIMUM_FLOW "minimum_flow"
     #define MEDIUM_FLOW "medium_flow"
     #define MAXIMUM_FLOW "maximum_flow"
+    #define BASE_10 10
 
     DistanceDetector* distanceDetector;
     Bluetooth* bluetooth;
     Led* autoLed;
     Led* manualLed;
+    int currentHumidity;
 
     void changeMode();
 public:
