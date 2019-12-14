@@ -2,6 +2,7 @@
 #include "Mode.h"
 #include "Pumps.h"
 #include "Flow.h"
+#include "Humidity.h"
 #include "string.h"
 
 ModeManagementTask::ModeManagementTask(DistanceDetector* distanceDetector,
@@ -10,6 +11,7 @@ ModeManagementTask::ModeManagementTask(DistanceDetector* distanceDetector,
     this->bluetooth = bluetooth;
     this->autoLed = autoLed;
     this->manualLed = manualLed;
+    this->currentHumidity = humidity;
 
     mode = AUTOMATIC;
     pumps = OFF;
@@ -53,15 +55,22 @@ void ModeManagementTask::tick() {
             strcpy(message, data);
             message1 = strtok(message, "+");
             message2 = strtok(NULL, "+");
-            if (strcmp(message1, MANUAL_MODE) == 0 && mode == AUTOMATIC || strcmp(message1, AUTOMATIC_MODE) == 0 && mode == MANUAL) {
+            if (strcmp(message1, MANUAL_MODE) == 0 && mode == AUTOMATIC ||
+                    strcmp(message1, AUTOMATIC_MODE) == 0 && mode == MANUAL) {
                 this->changeMode();
             }
             else if (strcmp(message1, PUMPS_OFF) == 0) {
                 pumps = OFF;
             } else if (strcmp(message1, PUMPS_ON) == 0) {
                 pumps = ON;
-                flow = strcmp(message2, MINIMUM_FLOW) == 0 ? MINIMUM : strcmp(message2, MEDIUM_FLOW) == 0 ? MEDIUM : MAXIMUM;
+                flow = strcmp(message2, MINIMUM_FLOW) == 0 ? MINIMUM :
+                    strcmp(message2, MEDIUM_FLOW) == 0 ? MEDIUM : MAXIMUM;
             }
+        }
+        if (humidity != this->currentHumidity) {
+            this->currentHumidity = humidity;
+            itoa(this->currentHumidity, message, BASE_10);
+            this->bluetooth->sentData(message);
         }
     } else if (mode == MANUAL) {
         this->changeMode();
