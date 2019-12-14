@@ -45,7 +45,7 @@ public class ServerDataImpl implements ServerData {
 	}
 
 	@Override
-	public void addUmidityValuesListElement(Float umidityValue, Date receivingDate) {
+	public void addUmidityValuesListElement(float umidityValue, Date receivingDate) {
 		this.manageListFull(this.umidityValuesList);
 		this.umidityValuesList.add(new Pair<Float, Date>(umidityValue, receivingDate));
 

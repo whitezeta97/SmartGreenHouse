@@ -74,10 +74,8 @@ public class ObservableSghDataServiceImpl extends AbstractVerticle implements Ob
 		}
 
 		for (Pair<Long, Date> elem : this.serverData.getWateringsList()) {
-			final float durationInSeconds = elem.getX() / 1000;
-			System.out.println("NEGRO NEGROOOO: " + durationInSeconds);
 			arr.add(new JsonObject().put(MessageTypes.WATERING_LIST.toString(),
-					new JsonObject().put(MessageTypes.WATERING_DURATION.toString(), durationInSeconds)
+					new JsonObject().put(MessageTypes.WATERING_DURATION.toString(), elem.getX())
 							.put(MessageTypes.WATERING_DATE.toString(), elem.getY().toString())));
 		}
 

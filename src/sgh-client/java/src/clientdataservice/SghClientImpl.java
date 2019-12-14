@@ -98,7 +98,7 @@ public class SghClientImpl extends Thread implements SghClient {
 					JsonObject innerJSonArray = receivedJSonObject.getJsonObject(MessageTypes.WATERING_LIST.toString());
 
 					this.serverData.addWateringsListElement(
-							innerJSonArray.getFloat(MessageTypes.WATERING_DURATION.toString()),
+							innerJSonArray.getFloat(MessageTypes.WATERING_DURATION.toString()) / 1000,
 							innerJSonArray.getString(MessageTypes.WATERING_DATE.toString()));
 				}
 			}

@@ -14,7 +14,7 @@ public interface ServerData {
 
 	void setCurrentState(SghStates currentState);
 
-	void addUmidityValuesListElement(Float umidityValue, Date receivingDate);
+	void addUmidityValuesListElement(float umidityValue, Date receivingDate);
 
 	void addWateringsListElement(long wateringDuration, Date wateringDate);
 

@@ -42,7 +42,7 @@ public class TestClient extends AbstractVerticle {
 		}).putHeader("content-type", "application/json").end(item.encodePrettily());
 		
 		try {
-			Thread.sleep(1000);
+			Thread.sleep(537);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
