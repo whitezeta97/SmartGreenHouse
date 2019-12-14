@@ -1,6 +1,6 @@
 package events;
 
-public class TickEventImpl implements TickEvent, Event {
+public class TickEventImpl implements TickEvent {
 
 	private long time;
 

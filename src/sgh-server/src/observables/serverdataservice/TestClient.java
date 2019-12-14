@@ -1,4 +1,4 @@
-package observable.serverdataservice;
+package observables.serverdataservice;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Vertx;
@@ -9,7 +9,7 @@ public class TestClient extends AbstractVerticle {
 
 	public static void main(String[] args) {
 
-		String host = "89fe4a4b.ngrok.io";
+		String host = "cf7c2290.ngrok.io";
 		int port = 80;
 
 		Vertx vertx = Vertx.vertx();
@@ -26,7 +26,7 @@ public class TestClient extends AbstractVerticle {
 		
 		
 		try {
-			Thread.sleep(5500);
+			Thread.sleep(6000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
