@@ -20,8 +20,10 @@ void PumpsManagementTask::tick() {
         this->flowLed->turnOn();
         this->servo->setAngle(flow == MINIMUM ? MINIMUM_ANGLE :
             flow == MEDIUM ? MEDIUM_ANGLE : MAXIMUM_ANGLE);
+        this->pumpsOn = true;
     } else if (this->pumpsOn && pumps == OFF) {
         this->flowLed->turnOff();
         this->servo->setAngle(ZERO_ANGLE);
+        this->pumpsOn = false;
     }
 }
