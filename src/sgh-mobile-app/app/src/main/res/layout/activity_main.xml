@@ -29,19 +29,19 @@
             tools:text="Status : not connected" />
 
         <TextView
-            android:id="@+id/umidityLabel"
+            android:id="@+id/humidityLabel"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Umidity: 0%" />
+            android:layout_height="wrap_content" />
 
         <Button
             android:id="@+id/btnMode"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:enabled="false"
-            android:text="Automatic Mode" />
+            android:text="Manual Mode" />
 
         <RadioGroup
+            android:id="@+id/rdbGroup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -53,44 +53,39 @@
                 android:gravity="center"
                 android:text="Flow" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
+            <RadioButton
+                android:id="@+id/rbMinimumFlow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:checked="true"
+                android:enabled="false"
+                android:text="Minimum" />
 
-                <RadioButton
-                    android:id="@+id/rbMinimumFlow"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:enabled="false"
-                    android:text="Minimum" />
+            <RadioButton
+                android:id="@+id/rbMedium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:enabled="false"
+                android:text="Medium" />
 
-                <RadioButton
-                    android:id="@+id/rbMedium"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:enabled="false"
-                    android:text="Medium" />
-
-                <RadioButton
-                    android:id="@+id/rbMaximum"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:enabled="false"
-                    android:text="Maximum" />
-            </LinearLayout>
+            <RadioButton
+                android:id="@+id/rbMaximum"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:enabled="false"
+                android:text="Maximum" />
 
         </RadioGroup>
 
         <Button
-            android:id="@+id/btnPump"
+            android:id="@+id/btnPumps"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:enabled="false"
-            android:text="Pump on" />
+            android:text="Pumps on" />
 
         <ListView
             android:id="@+id/lstLista"

@@ -57,34 +57,19 @@ public final class RealBluetoothChannel extends BluetoothChannel {
 
         public void run() {
             while (true) {
-                /*byte[] buffer = new byte[1024];
-                int numBytes;
-
-                try {
-                    numBytes = inputStream.read(buffer);
-                    Message receivedMessage = btChannelHandler.obtainMessage(C.channel.MESSSAGE_RECEIVED, numBytes, -1, buffer);
-                    receivedMessage.sendToTarget();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    break;
-                }*/
-
                 try {
                     DataInputStream input = new DataInputStream(inputStream);
-
                     StringBuffer readbuffer = new StringBuffer();
-
                     byte inputByte;
 
                     while ((inputByte = input.readByte()) != 0) {
                         char chr = (char) inputByte;
                         if(chr != C.message.MESSAGE_TERMINATOR){
-                            readbuffer.append(chr);
+                                readbuffer.append(chr);
                         } else {
                             String inputString = readbuffer.toString();
                             Message receivedMessage = btChannelHandler.obtainMessage(C.channel.MESSSAGE_RECEIVED, inputString.getBytes().length, -1, inputString.getBytes());
                             receivedMessage.sendToTarget();
-
                             readbuffer = new StringBuffer();
                         }
                     }
