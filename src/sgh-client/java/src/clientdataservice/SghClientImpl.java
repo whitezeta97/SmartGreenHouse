@@ -1,37 +1,30 @@
 package clientdataservice;
 
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import serverdata.ServerData;
 import utilities.MessageTypes;
-import utilities.Pair;
 
 public class SghClientImpl extends Thread implements SghClient {
 	private String host;
 	private int port;
-	private static final int SLEEP_TIME = 3000;
+	private static final int SLEEP_TIME = 50;
 
-	private volatile boolean manualMode;
-	private volatile boolean isWatering;
-	private volatile String currentState;
+	private volatile ServerData serverData ;
 
-	private volatile List<Pair<Float, String>> umidityValuesList = new LinkedList<>();
-	private volatile List<Pair<Float, String>> wateringsList = new LinkedList<>();
-	private volatile List<String> warningsList = new LinkedList<>();
-	private volatile Date lastUpdateFromServer;
-
-	public SghClientImpl(final String host, final int port) {
-		this.host = host;
+	public SghClientImpl(final String host, final int port, final ServerData serverData) {
 		this.port = port;
+		this.host = host;
+		this.serverData = serverData;
 
 		this.start();
 	}
-
+	
+	@Override
 	public void run() {
 
 		while (true) {
@@ -39,7 +32,7 @@ public class SghClientImpl extends Thread implements SghClient {
 			this.getDataFromServer();
 
 			try {
-				Thread.sleep(SLEEP_TIME);
+				Thread.sleep(SghClientImpl.SLEEP_TIME);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -47,7 +40,7 @@ public class SghClientImpl extends Thread implements SghClient {
 
 	}
 
-	private synchronized void getDataFromServer() {
+	private void getDataFromServer() {
 
 		Vertx vertx = Vertx.vertx();
 		HttpClient client = vertx.createHttpClient();
@@ -58,11 +51,7 @@ public class SghClientImpl extends Thread implements SghClient {
 
 				JsonArray arr = bodyHandler.toJsonArray();
 
-				this.umidityValuesList.clear();
-				this.warningsList.clear();
-				this.wateringsList.clear();
-				
-				this.lastUpdateFromServer = new Date();
+				this.serverData.setLastUpdateFromServer(new Date().toString());
 
 				for (int i = 0; i < arr.size(); i++) {
 					JsonObject receivedJSonObject = arr.getJsonObject(i);
@@ -70,31 +59,34 @@ public class SghClientImpl extends Thread implements SghClient {
 					if (receivedJSonObject.containsKey(MessageTypes.FIRST_MESSAGE.toString())) {
 
 					} else if (receivedJSonObject.containsKey(MessageTypes.IS_WATERING.toString())) {
-						this.isWatering = receivedJSonObject.getBoolean(MessageTypes.IS_WATERING.toString());
+						this.serverData.setWatering(receivedJSonObject.getBoolean(MessageTypes.IS_WATERING.toString()));
 
 					} else if (receivedJSonObject.containsKey(MessageTypes.MANUALMODE.toString())) {
-						this.manualMode = receivedJSonObject.getBoolean(MessageTypes.MANUALMODE.toString());
+						this.serverData
+								.setManualMode(receivedJSonObject.getBoolean(MessageTypes.MANUALMODE.toString()));
 
 					} else if (receivedJSonObject.containsKey(MessageTypes.SGH_STATE.toString())) {
-						this.currentState = (String) receivedJSonObject.getValue(MessageTypes.SGH_STATE.toString());
+						this.serverData
+								.setCurrentState(receivedJSonObject.getString(MessageTypes.SGH_STATE.toString()));
 
 					} else if (receivedJSonObject.containsKey(MessageTypes.UMIDITY.toString())) {
 						JsonObject innerJSonArray = receivedJSonObject.getJsonObject(MessageTypes.UMIDITY.toString());
 
-						this.umidityValuesList.add(
-								new Pair<Float, String>(innerJSonArray.getFloat(MessageTypes.UMIDITY_VALUE.toString()),
-										innerJSonArray.getString(MessageTypes.UMIDITY_DATE.toString())));
+						this.serverData.addUmidityValuesListElement(
+								innerJSonArray.getFloat(MessageTypes.UMIDITY_VALUE.toString()),
+								innerJSonArray.getString(MessageTypes.UMIDITY_DATE.toString()));
 
 					} else if (receivedJSonObject.containsKey(MessageTypes.WARNING.toString())) {
-						this.warningsList.add(receivedJSonObject.getString(MessageTypes.WARNING.toString()));
+						this.serverData
+								.addWarningsListElement(receivedJSonObject.getString(MessageTypes.WARNING.toString()));
 
 					} else if (receivedJSonObject.containsKey(MessageTypes.WATERING_LIST.toString())) {
 						JsonObject innerJSonArray = receivedJSonObject
 								.getJsonObject(MessageTypes.WATERING_LIST.toString());
 
-						this.wateringsList.add(new Pair<Float, String>(
+						this.serverData.addWateringsListElement(
 								innerJSonArray.getFloat(MessageTypes.WATERING_DURATION.toString()),
-								innerJSonArray.getString(MessageTypes.WATERING_DATE.toString())));
+								innerJSonArray.getString(MessageTypes.WATERING_DATE.toString()));
 					}
 				}
 
@@ -103,38 +95,4 @@ public class SghClientImpl extends Thread implements SghClient {
 
 	}
 
-	@Override
-	public boolean isManualMode() {
-		return this.manualMode;
-	}
-
-	@Override
-	public boolean isWatering() {
-		return this.isWatering;
-	}
-
-	@Override
-	public String getCurrentState() {
-		return this.currentState;
-	}
-
-	@Override
-	public List<Pair<Float, String>> getUmidityValuesList() {
-		return this.umidityValuesList;
-	}
-
-	@Override
-	public List<Pair<Float, String>> getWateringsList() {
-		return this.wateringsList;
-	}
-
-	@Override
-	public List<String> getWarningsList() {
-		return this.warningsList;
-	}
-	
-	@Override
-	public Date getLastUpdateFromServer() {
-		return this.lastUpdateFromServer;
-	}
 }

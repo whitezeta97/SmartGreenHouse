@@ -1,4 +1,4 @@
-package observable.serverdataservice;
+package observables.serverdataservice;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.http.HttpServerResponse;
@@ -7,15 +7,13 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
-import observables.Observable;
 import observer.event.EventObserver;
+import serverdata.ServerData;
 import utilities.MessageTypes;
 import utilities.Pair;
-import utilities.SghStates;
 
 import java.util.Date;
 import java.util.LinkedList;
-import java.util.List;
 
 import events.EdgeMsgEvent;
 import events.EdgeMsgEventImpl;
@@ -24,22 +22,17 @@ import events.Event;
 /*
  * Data Service as a vertx event-loop 
  */
-public class ObservableSghDataServiceImpl extends AbstractVerticle implements Observable, ObservableSghDataService {
+public class ObservableSghDataServiceImpl extends AbstractVerticle implements ObservableSghDataService {
 
 	private int port;
-
-	private volatile boolean manualMode;
-	private volatile boolean isWatering;
-	private volatile SghStates currentState;
-	private volatile List<Pair<Float, Date>> umidityValuesList = new LinkedList<>();
-	private volatile List<Pair<Float, Date>> wateringsList = new LinkedList<>();
-	private volatile List<Date> warningsList = new LinkedList<>();
+	private ServerData serverData;
 
 	private LinkedList<EventObserver> observers;
 
-	public ObservableSghDataServiceImpl(int port) {
+	public ObservableSghDataServiceImpl(final int port, final ServerData serverData) {
 		this.observers = new LinkedList<>();
 		this.port = port;
+		this.serverData = serverData;
 	}
 
 	@Override
@@ -49,8 +42,6 @@ public class ObservableSghDataServiceImpl extends AbstractVerticle implements Ob
 		router.post("/api/data").handler(this::handleAddNewData);
 		router.get("/api/data").handler(this::handleGetData);
 		vertx.createHttpServer().requestHandler(router::accept).listen(port);
-
-		log("Service ready.");
 	}
 
 	private void handleAddNewData(RoutingContext routingContext) {
@@ -62,7 +53,6 @@ public class ObservableSghDataServiceImpl extends AbstractVerticle implements Ob
 			sendError(400, response);
 		} else {
 			float value = res.getFloat("value");
-			log(value + "");
 			response.setStatusCode(200).end();
 			EdgeMsgEvent umidityEvent = new EdgeMsgEventImpl(value);
 			this.notifyEvent(umidityEvent);
@@ -70,27 +60,27 @@ public class ObservableSghDataServiceImpl extends AbstractVerticle implements Ob
 
 	}
 
-	private synchronized void handleGetData(RoutingContext routingContext) {
+	private void handleGetData(RoutingContext routingContext) {
 		JsonArray arr = new JsonArray();
 
-		arr.add(new JsonObject().put(MessageTypes.MANUALMODE.toString(), this.manualMode));
-		arr.add(new JsonObject().put(MessageTypes.IS_WATERING.toString(), this.isWatering));
-		arr.add(new JsonObject().put(MessageTypes.SGH_STATE.toString(), this.currentState));
+		arr.add(new JsonObject().put(MessageTypes.MANUALMODE.toString(), this.serverData.isManualMode()));
+		arr.add(new JsonObject().put(MessageTypes.IS_WATERING.toString(), this.serverData.isWatering()));
+		arr.add(new JsonObject().put(MessageTypes.SGH_STATE.toString(), this.serverData.getCurrentState()));
 
-		for (Pair<Float, Date> elem : this.umidityValuesList) {
+		for (Pair<Float, Date> elem : this.serverData.getUmidityValuesList()) {
 			arr.add(new JsonObject().put(MessageTypes.UMIDITY.toString(),
 					new JsonObject().put(MessageTypes.UMIDITY_VALUE.toString(), elem.getX())
 							.put(MessageTypes.UMIDITY_DATE.toString(), elem.getY().toString())));
 		}
 
-		for (Pair<Float, Date> elem : this.wateringsList) {
+		for (Pair<Long, Date> elem : this.serverData.getWateringsList()) {
 			final float durationInSeconds = elem.getX() / 1000;
 			arr.add(new JsonObject().put(MessageTypes.WATERING_LIST.toString(),
 					new JsonObject().put(MessageTypes.WATERING_DURATION.toString(), durationInSeconds)
 							.put(MessageTypes.WATERING_DATE.toString(), elem.getY().toString())));
 		}
 
-		for (Date elem : this.warningsList) {
+		for (Date elem : this.serverData.getWarningsList()) {
 			arr.add(new JsonObject().put(MessageTypes.WARNING.toString(), elem.toString()));
 		}
 
@@ -99,10 +89,6 @@ public class ObservableSghDataServiceImpl extends AbstractVerticle implements Ob
 
 	private void sendError(int statusCode, HttpServerResponse response) {
 		response.setStatusCode(statusCode).end();
-	}
-
-	private void log(String msg) {
-		System.out.println("[DATA SERVICE] " + msg);
 	}
 
 	private void notifyEvent(final Event ev) {
@@ -127,36 +113,6 @@ public class ObservableSghDataServiceImpl extends AbstractVerticle implements Ob
 			this.observers.remove(obs);
 		}
 
-	}
-
-	@Override
-	public synchronized void setManualMode(boolean manualMode) {
-		this.manualMode = manualMode;
-	}
-
-	@Override
-	public synchronized void setWatering(boolean isWatering) {
-		this.isWatering = isWatering;
-	}
-
-	@Override
-	public synchronized void setCurrentState(SghStates currentState) {
-		this.currentState = currentState;
-	}
-
-	@Override
-	public synchronized void setUmidityValuesList(List<Pair<Float, Date>> umidityValuesList) {
-		this.umidityValuesList = umidityValuesList;
-	}
-
-	@Override
-	public synchronized void setWateringsList(List<Pair<Float, Date>> wateringsList) {
-		this.wateringsList = wateringsList;
-	}
-
-	@Override
-	public synchronized void setWarningsList(List<Date> warningsList) {
-		this.warningsList = warningsList;
 	}
 
 }

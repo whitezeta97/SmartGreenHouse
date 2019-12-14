@@ -2,45 +2,25 @@ package controller;
 
 import clientdataservice.SghClient;
 import clientdataservice.SghClientImpl;
+import serverdata.ServerData;
+import serverdata.ServerDataImpl;
 import view.Gui;
 import view.GuiImpl;
 
-public class ControllerImpl extends Thread implements Controller {
-	private final Gui gui;
+public class ControllerImpl implements Controller {
 	private final SghClient sghClient;
-
-	private static final int SLEEP_TIME = 3000;
+	private final ServerData serverData;
+	//private final Gui gui;
 
 	public ControllerImpl() {
-		this.gui = new GuiImpl();
-		this.sghClient = new SghClientImpl("89fe4a4b.ngrok.io", 80);
-		this.start();
+		this.serverData = new ServerDataImpl();
+		this.sghClient = new SghClientImpl("cf7c2290.ngrok.io", 80, this.serverData);
+		//this.gui = new GuiImpl(this);
 	}
 
-	private void getDataForView() {
-		this.gui.setCurrentState(this.sghClient.getCurrentState());
-		this.gui.setManualMode(this.sghClient.isManualMode());
-		this.gui.setUmidityValuesList(this.sghClient.getUmidityValuesList());
-		this.gui.setWarningsList(this.sghClient.getWarningsList());
-		this.gui.setWatering(this.sghClient.isWatering());
-		this.gui.setWateringsList(this.sghClient.getWateringsList());
-		this.gui.setLastUpdateFromServer(this.sghClient.getLastUpdateFromServer());
-		this.gui.viewUpdate();
-	}
-
-	public void run() {
-
-		while (true) {
-
-			this.getDataForView();
-
-			try {
-				Thread.sleep(SLEEP_TIME);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-
+	@Override
+	public ServerData getDataForView() {
+		return this.serverData;
 	}
 
 }

@@ -7,11 +7,13 @@ import events.EdgeMsgEvent;
 import events.Event;
 import events.TickEvent;
 import io.vertx.core.Vertx;
-import observable.serverdataservice.ObservableSghDataServiceImpl;
 import observables.msgservice.ObservableMsgService;
 import observables.msgservice.ObservableMsgServiceImpl;
+import observables.serverdataservice.ObservableSghDataServiceImpl;
 import observables.timer.ObservableTimer;
 import observables.timer.ObservableTimerImpl;
+import serverdata.ServerData;
+import serverdata.ServerDataImpl;
 
 public class EventLoopImpl extends AbstractEventLoop {
 
@@ -19,19 +21,22 @@ public class EventLoopImpl extends AbstractEventLoop {
 
 	public EventLoopImpl(String port, int rate) {
 
-		ObservableMsgService msgService = new ObservableMsgServiceImpl(port, rate);
+		final ServerData serverData = new ServerDataImpl();
+
+		final ObservableMsgService msgService = new ObservableMsgServiceImpl(port, rate);
 		msgService.addObserver(this);
 		msgService.init();
 
 		ObservableTimer timer = new ObservableTimerImpl();
 		timer.addObserver(this);
 
-		Vertx vertx = Vertx.vertx();
-		ObservableSghDataServiceImpl serverDataService = new ObservableSghDataServiceImpl(80);
+		final Vertx vertx = Vertx.vertx();
+
+		final ObservableSghDataServiceImpl serverDataService = new ObservableSghDataServiceImpl(80, serverData);
 		serverDataService.addObserver(this);
 		vertx.deployVerticle(serverDataService);
 
-		this.asincFiniteStateMachine = new SmartGreenHouseAFSM(timer, msgService, serverDataService);
+		this.asincFiniteStateMachine = new SmartGreenHouseAFSM(timer, msgService, serverData);
 
 	}
 

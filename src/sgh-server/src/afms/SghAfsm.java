@@ -11,6 +11,4 @@ public interface SghAfsm {
 
 	void manageTimerTickEvent();
 
-	boolean isManualMode();
-
 }

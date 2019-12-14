@@ -2,25 +2,13 @@ package view;
 
 import javax.swing.*;
 
-import utilities.Pair;
+import controller.Controller;
 
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
 
-public class GuiImpl implements Gui {
-
-	private volatile boolean manualMode;
-	private volatile boolean isWatering;
-	private volatile String currentState;
-
-	private volatile List<Pair<Float, String>> umidityValuesList;
-	private volatile List<Pair<Float, String>> wateringsList;
-	private volatile List<String> warningsList;
-	private volatile Date lastUpdateFromServer;
+public class GuiImpl extends Thread implements Gui {
 
 	private DefaultListModel<String> viewUmidityList;
 	private DefaultListModel<String> viewWateringsList;
@@ -40,11 +28,11 @@ public class GuiImpl implements Gui {
 	private final Font listsTitleFont = new Font("Calibri", Font.BOLD, 18);
 	private final Font listsFont = new Font("Calibri", Font.BOLD, 17);
 
-	public GuiImpl() {
+	private final Controller controller;
 
-		this.umidityValuesList = new LinkedList<>();
-		this.wateringsList = new LinkedList<>();
-		this.warningsList = new LinkedList<>();
+	public GuiImpl(final Controller controller) {
+
+		this.controller = controller;
 
 		this.viewUmidityList = new DefaultListModel<>();
 		this.umidityJList = new JList<String>(this.viewUmidityList);
@@ -161,29 +149,32 @@ public class GuiImpl implements Gui {
 		jf.setTitle("Smart Green House Front-end");
 		jf.setVisible(true);
 
-		this.viewUpdate();
+		this.start();
 	}
 
 	private <E> void manageViewListsProperties(final JList<E> jList) {
 
-		final int lastIndex = this.umidityJList.getModel().getSize() - 1;
+		final int lastIndex = this.umidityJList.getModel().getSize();
 
-		if (lastIndex >= 0) {
+		if (lastIndex > 0) {
 			jList.ensureIndexIsVisible(lastIndex);
-			jList.setSelectedIndex(lastIndex);
+			// jList.setSelectedIndex(lastIndex);
 		}
 	}
 
 	private void manageListsData() {
-		this.umidityValuesList.stream().map(i -> i.getX().toString() + " on " + i.getY().toString())
+		this.controller.getDataForView().getUmidityValuesList().stream()
+				.map(i -> i.getX().toString() + " on " + i.getY().toString())
 				.filter(i -> !this.umidityJList.getModel().toString().contains(i)).iterator()
 				.forEachRemaining(i -> this.viewUmidityList.addElement(i));
 
-		this.wateringsList.stream().map(i -> "Duration: " + i.getX() + " s  on " + i.getY().toString())
+		this.controller.getDataForView().getWateringsList().stream()
+				.map(i -> "Duration: " + i.getX() + " s  on " + i.getY().toString())
 				.filter(i -> !this.wateringsJList.getModel().toString().contains(i)).iterator()
 				.forEachRemaining(i -> this.viewWateringsList.addElement(i));
 
-		this.warningsList.stream().filter(i -> !this.warningsJList.getModel().toString().contains(i)).iterator()
+		this.controller.getDataForView().getWarningsList().stream()
+				.filter(i -> !this.warningsJList.getModel().toString().contains(i)).iterator()
 				.forEachRemaining(i -> this.viewWarningsList.addElement(i));
 
 		this.manageViewListsProperties(this.umidityJList);
@@ -193,70 +184,43 @@ public class GuiImpl implements Gui {
 	}
 
 	private void manageViewStatusLabels() {
-		if (this.manualMode) {
+		if (this.controller.getDataForView().isManualMode()) {
 			this.manualModeLabel.setText("MANUAL MODE: ON");
 		} else {
 			this.manualModeLabel.setText("MANUAL MODE: OFF");
 		}
 
-		if (this.isWatering) {
+		if (this.controller.getDataForView().isWatering()) {
 			this.isWateringLabel.setText("WATERING STATUS: ON");
 		} else {
 			this.isWateringLabel.setText("WATERING STATUS: OFF");
 		}
 
-		if (this.currentState != null) {
-			this.currentStateLabel.setText("SGHR STATUS: " + this.currentState);
+		if (this.controller.getDataForView().getCurrentState() != null) {
+			this.currentStateLabel.setText("SGHR STATUS: " + this.controller.getDataForView().getCurrentState());
 		}
 
-		if (this.lastUpdateFromServer != null) {
-			this.lastUpdateFromServerLabel.setText("LAST UPDATE FROM SERVER ON: " + this.lastUpdateFromServer);
+		if (this.controller.getDataForView().getLastUpdateFromServer() != null) {
+			this.lastUpdateFromServerLabel
+					.setText("LAST UPDATE FROM SERVER: " + this.controller.getDataForView().getLastUpdateFromServer());
 		} else {
-			this.lastUpdateFromServerLabel.setText("LAST UPDATE FROM SERVER ON: ---");
+			this.lastUpdateFromServerLabel.setText("LAST UPDATE FROM SERVER: ---");
 		}
 
 	}
 
-	@Override
-	public void viewUpdate() {
+	private void viewUpdate() {
 		this.manageListsData();
 		this.manageViewStatusLabels();
 
 	}
 
 	@Override
-	public synchronized void setManualMode(final boolean manualMode) {
-		this.manualMode = manualMode;
-	}
+	public void run() {
+		while (true) {
+			this.viewUpdate();
 
-	@Override
-	public synchronized void setWatering(final boolean isWatering) {
-		this.isWatering = isWatering;
-	}
-
-	@Override
-	public synchronized void setCurrentState(final String currentState) {
-		this.currentState = currentState;
-	}
-
-	@Override
-	public synchronized void setUmidityValuesList(final List<Pair<Float, String>> umidityValuesList) {
-		this.umidityValuesList = umidityValuesList;
-	}
-
-	@Override
-	public synchronized void setWateringsList(final List<Pair<Float, String>> wateringsList) {
-		this.wateringsList = wateringsList;
-	}
-
-	@Override
-	public synchronized void setWarningsList(final List<String> warningsList) {
-		this.warningsList = warningsList;
-	}
-
-	@Override
-	public synchronized void setLastUpdateFromServer(final Date lastUpdateFromServer) {
-		this.lastUpdateFromServer = lastUpdateFromServer;
+		}
 	}
 
 }
