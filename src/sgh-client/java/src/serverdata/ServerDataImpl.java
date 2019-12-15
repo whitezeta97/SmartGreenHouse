@@ -5,6 +5,11 @@ import java.util.List;
 
 import utilities.Pair;
 
+/**
+ * 
+ * Implements the SGH Server status data received from the sever.
+ *
+ */
 public class ServerDataImpl implements ServerData {
 	private volatile boolean isManualMode;
 	private volatile boolean isWatering;
@@ -22,6 +27,7 @@ public class ServerDataImpl implements ServerData {
 		this.warningsList = new ArrayList<>();
 	}
 
+	/* Remove the first element of the list if it's full. */
 	private <T> void manageListFull(final List<T> list) {
 		if (list.size() >= ServerDataImpl.LIST_SIZE) {
 			list.remove(0);
@@ -85,7 +91,7 @@ public class ServerDataImpl implements ServerData {
 	}
 
 	@Override
-	public List<Pair<Float, String>> getUmidityValuesList() {
+	public List<Pair<Float, String>> getHumidityValuesList() {
 		return this.umidityValuesList;
 	}
 

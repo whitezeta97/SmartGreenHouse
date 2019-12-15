@@ -46,33 +46,33 @@ public class ObservableSghDataServiceImpl extends AbstractVerticle implements Ob
 
 	/* Manages post requests, it generates an event. */
 	private void handleAddNewData(RoutingContext routingContext) {
-		HttpServerResponse response = routingContext.response();
+		final HttpServerResponse response = routingContext.response();
 
-		JsonObject res = routingContext.getBodyAsJson();
+		final JsonObject res = routingContext.getBodyAsJson();
 
 		if (res == null) {
 			sendError(400, response);
 		} else {
-			float value = res.getFloat("value");
+			final float value = res.getFloat("value");
 			response.setStatusCode(200).end();
-			EdgeMsgEvent umidityEvent = new EdgeMsgEventImpl(value);
-			this.notifyEvent(umidityEvent);
+			final EdgeMsgEvent humidityEvent = new EdgeMsgEventImpl(value);
+			this.notifyEvent(humidityEvent);
 		}
 
 	}
 
 	/* Manages get requests, it generates an event. */
 	private void handleGetData(RoutingContext routingContext) {
-		JsonArray arr = new JsonArray();
+		final JsonArray arr = new JsonArray();
 
 		arr.add(new JsonObject().put(MessageTypes.MANUALMODE.toString(), this.serverData.isManualMode()));
 		arr.add(new JsonObject().put(MessageTypes.IS_WATERING.toString(), this.serverData.isWatering()));
 		arr.add(new JsonObject().put(MessageTypes.SGH_STATE.toString(), this.serverData.getCurrentState()));
 
-		for (final Pair<Float, Date> elem : this.serverData.getUmidityValuesList()) {
-			arr.add(new JsonObject().put(MessageTypes.UMIDITY.toString(),
-					new JsonObject().put(MessageTypes.UMIDITY_VALUE.toString(), elem.getX())
-							.put(MessageTypes.UMIDITY_DATE.toString(), elem.getY().toString())));
+		for (final Pair<Float, Date> elem : this.serverData.getHumidityValuesList()) {
+			arr.add(new JsonObject().put(MessageTypes.HUMIDITY.toString(),
+					new JsonObject().put(MessageTypes.HUMIDITY_VALUE.toString(), elem.getX())
+							.put(MessageTypes.HUMIDITY_DATE.toString(), elem.getY().toString())));
 		}
 
 		for (final Pair<Long, Date> elem : this.serverData.getWateringsList()) {

@@ -12,6 +12,11 @@ import io.vertx.core.json.JsonObject;
 import serverdata.ServerData;
 import utilities.MessageTypes;
 
+/**
+ * 
+ * Implements the SGH Client that sends get request to SGH Server to get data.
+ *
+ */
 public class SghClientImpl extends Thread implements SghClient {
 
 	private static final int SLEEP_TIME = 1000;
@@ -28,6 +33,17 @@ public class SghClientImpl extends Thread implements SghClient {
 
 	private BlockingQueue<JsonArray> receivedDataFromServer = new ArrayBlockingQueue<>(SghClientImpl.MAX_SIZE);
 
+	/**
+	 * 
+	 * @param host
+	 *            the host name to which the client has to connect.
+	 * @param port
+	 *            the server's port.
+	 * @param serverData
+	 *            stores the SGH Server data received from the server.
+	 * @param mutex
+	 *            the semaphore to access shared data.
+	 */
 	public SghClientImpl(final String host, final int port, final ServerData serverData, Semaphore mutex) {
 		this.port = port;
 		this.host = host;
@@ -64,10 +80,11 @@ public class SghClientImpl extends Thread implements SghClient {
 
 	}
 
+	/* stores locally the SGH Server data received from SGH Server. */
 	private void manageDataFromHttpResponses() {
 		this.serverData.setLastUpdateFromServer(new Date().toString());
 
-		for (JsonArray arr : this.receivedDataFromServer) {
+		for (final JsonArray arr : this.receivedDataFromServer) {
 
 			for (int i = 0; i < arr.size(); i++) {
 				JsonObject receivedJSonObject = arr.getJsonObject(i);
@@ -83,12 +100,12 @@ public class SghClientImpl extends Thread implements SghClient {
 				} else if (receivedJSonObject.containsKey(MessageTypes.SGH_STATE.toString())) {
 					this.serverData.setCurrentState(receivedJSonObject.getString(MessageTypes.SGH_STATE.toString()));
 
-				} else if (receivedJSonObject.containsKey(MessageTypes.UMIDITY.toString())) {
-					JsonObject innerJSonArray = receivedJSonObject.getJsonObject(MessageTypes.UMIDITY.toString());
+				} else if (receivedJSonObject.containsKey(MessageTypes.HUMIDITY.toString())) {
+					JsonObject innerJSonArray = receivedJSonObject.getJsonObject(MessageTypes.HUMIDITY.toString());
 
 					this.serverData.addUmidityValuesListElement(
-							innerJSonArray.getFloat(MessageTypes.UMIDITY_VALUE.toString()),
-							innerJSonArray.getString(MessageTypes.UMIDITY_DATE.toString()));
+							innerJSonArray.getFloat(MessageTypes.HUMIDITY_VALUE.toString()),
+							innerJSonArray.getString(MessageTypes.HUMIDITY_DATE.toString()));
 
 				} else if (receivedJSonObject.containsKey(MessageTypes.WARNING.toString())) {
 					this.serverData
@@ -106,6 +123,7 @@ public class SghClientImpl extends Thread implements SghClient {
 		}
 	}
 
+	/* Gets SGH Server data via http get request. */
 	private void getDataFromServer() {
 
 		this.client.get(this.port, this.host, "/api/data", response -> {

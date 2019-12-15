@@ -9,14 +9,19 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.concurrent.Semaphore;
 
+/**
+ * 
+ * Implements the Graphic User Interface of the application.
+ *
+ */
 public class GuiImpl extends Thread implements Gui {
 	private static final int SLEEP_TIME = 60;
 
-	private DefaultListModel<String> viewUmidityList;
+	private DefaultListModel<String> viewHumidityList;
 	private DefaultListModel<String> viewWateringsList;
 	private DefaultListModel<String> viewWarningsList;
 
-	private JList<String> umidityJList;
+	private JList<String> humidityJList;
 	private JList<String> wateringsJList;
 	private JList<String> warningsJList;
 
@@ -33,14 +38,21 @@ public class GuiImpl extends Thread implements Gui {
 	private final Controller controller;
 	private volatile Semaphore mutex;
 
+	/**
+	 * 
+	 * @param controller
+	 *            the application Controller.
+	 * @param mutex
+	 *            the semaphore to access shared data.
+	 */
 	public GuiImpl(final Controller controller, Semaphore mutex) {
 
 		this.controller = controller;
 		this.mutex = mutex;
 
-		this.viewUmidityList = new DefaultListModel<>();
-		this.umidityJList = new JList<String>(this.viewUmidityList);
-		this.umidityJList.setFont(this.listsFont);
+		this.viewHumidityList = new DefaultListModel<>();
+		this.humidityJList = new JList<String>(this.viewHumidityList);
+		this.humidityJList.setFont(this.listsFont);
 
 		this.viewWateringsList = new DefaultListModel<>();
 		this.wateringsJList = new JList<String>(this.viewWateringsList);
@@ -59,8 +71,8 @@ public class GuiImpl extends Thread implements Gui {
 		this.lastUpdateFromServerLabel = new JLabel("LAST UPDATE FORM SERVER:");
 		this.lastUpdateFromServerLabel.setFont(labelFont);
 
-		JScrollPane jScrollPaneUmidityList = new JScrollPane(this.umidityJList);
-		jScrollPaneUmidityList.setAutoscrolls(true);
+		JScrollPane jScrollPaneHumidityList = new JScrollPane(this.humidityJList);
+		jScrollPaneHumidityList.setAutoscrolls(true);
 		JScrollPane jScrollPaneWateringsList = new JScrollPane(this.wateringsJList);
 		jScrollPaneWateringsList.setAutoscrolls(true);
 		JScrollPane jScrollPaneWarningsList = new JScrollPane(this.warningsJList);
@@ -104,9 +116,9 @@ public class GuiImpl extends Thread implements Gui {
 
 		constr.gridx = 1;
 		constr.gridy = 1;
-		final JLabel umidityListTitle = new JLabel("Umidity list:");
-		umidityListTitle.setFont(this.listsTitleFont);
-		jPanel.add(umidityListTitle, constr);
+		final JLabel humidityListTitle = new JLabel("Humidity list:");
+		humidityListTitle.setFont(this.listsTitleFont);
+		jPanel.add(humidityListTitle, constr);
 
 		constr.gridx = 2;
 		constr.gridy = 1;
@@ -124,7 +136,7 @@ public class GuiImpl extends Thread implements Gui {
 		jPanel.add(jScrollPaneWarningsList, constr);
 		constr.gridx = 1;
 		constr.gridy = 2;
-		jPanel.add(jScrollPaneUmidityList, constr);
+		jPanel.add(jScrollPaneHumidityList, constr);
 		constr.gridx = 2;
 		constr.gridy = 2;
 		jPanel.add(jScrollPaneWateringsList, constr);
@@ -156,9 +168,10 @@ public class GuiImpl extends Thread implements Gui {
 		this.start();
 	}
 
+	/* Manages JList settings. */
 	private <E> void manageViewListsProperties(final JList<E> jList) {
 
-		final int lastIndex = this.umidityJList.getModel().getSize();
+		final int lastIndex = this.humidityJList.getModel().getSize();
 
 		if (lastIndex > 0) {
 			jList.ensureIndexIsVisible(lastIndex);
@@ -166,11 +179,14 @@ public class GuiImpl extends Thread implements Gui {
 		}
 	}
 
+	/*
+	 * Displays the received data from server. Filters the already displayed data.
+	 */
 	private void manageListsData() {
-		this.controller.getDataForView().getUmidityValuesList().stream()
+		this.controller.getDataForView().getHumidityValuesList().stream()
 				.map(i -> i.getX().toString() + " on " + i.getY().toString())
-				.filter(i -> !this.umidityJList.getModel().toString().contains(i)).iterator()
-				.forEachRemaining(i -> this.viewUmidityList.addElement(i));
+				.filter(i -> !this.humidityJList.getModel().toString().contains(i)).iterator()
+				.forEachRemaining(i -> this.viewHumidityList.addElement(i));
 
 		this.controller.getDataForView().getWateringsList().stream()
 				.map(i -> "Duration: " + i.getX() + " s  on " + i.getY().toString())
@@ -181,13 +197,17 @@ public class GuiImpl extends Thread implements Gui {
 				.filter(i -> !this.warningsJList.getModel().toString().contains(i)).iterator()
 				.forEachRemaining(i -> this.viewWarningsList.addElement(i));
 
-		this.manageViewListsProperties(this.umidityJList);
+		this.manageViewListsProperties(this.humidityJList);
 		this.manageViewListsProperties(this.wateringsJList);
 		this.manageViewListsProperties(this.warningsJList);
 
 	}
 
-	private void manageViewStatusLabels() {
+	/*
+	 * Displays SGH Server live manual mode, watering, status and last received
+	 * update.
+	 */
+	private void displayServerLiveStatusData() {
 		if (this.controller.getDataForView().isManualMode()) {
 			this.manualModeLabel.setText("MANUAL MODE: ON");
 		} else {
@@ -213,9 +233,10 @@ public class GuiImpl extends Thread implements Gui {
 
 	}
 
+	/* Updates the data displayed by the GUI. */
 	private void viewUpdate() {
 		this.manageListsData();
-		this.manageViewStatusLabels();
+		this.displayServerLiveStatusData();
 
 	}
 

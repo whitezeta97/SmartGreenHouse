@@ -26,7 +26,7 @@ public class ObservableMsgServiceImpl extends AbstractObservable implements Obse
 	@Override
 	public void init() {
 		try {
-			channel = new ExtendedSerialCommChannel(port, rate);
+			this.channel = new ExtendedSerialCommChannel(this.port, this.rate);
 			// channel = new SerialCommChannel(port, rate);
 			System.out.println("Waiting Arduino for rebooting...");
 			Thread.sleep(4000);
@@ -38,7 +38,7 @@ public class ObservableMsgServiceImpl extends AbstractObservable implements Obse
 		new Thread(() -> {
 			while (true) {
 				try {
-					String msg = channel.receiveMsg();
+					final String msg = channel.receiveMsg();
 					System.out.println("received " + msg);
 					this.notifyEvent(new ControllerMsgEventImpl(msg));
 				} catch (Exception ex) {
@@ -49,7 +49,7 @@ public class ObservableMsgServiceImpl extends AbstractObservable implements Obse
 	}
 
 	@Override
-	public void sendMsg(String msg) {
+	public void sendMsg(final String msg) {
 		this.channel.sendMsg(msg);
 	}
 

@@ -7,14 +7,14 @@ import io.vertx.core.json.JsonObject;
 
 /**
  * 
- * Implements a test for sending umidity to Server.
+ * Implements a test for sending humidity to Server.
  *
  */
 public class TestClient extends AbstractVerticle {
 
 	public static void main(String[] args) {
 
-		String host = "3eb1f184.ngrok.io";
+		String host = "89797862.ngrok.io";
 		int port = 80;
 
 		Vertx vertx = Vertx.vertx();

@@ -1,8 +1,11 @@
 package controller;
 
-import io.vertx.core.AbstractVerticle;
-
-public class Init extends AbstractVerticle {
+/**
+ * 
+ * Launches the Controller application.
+ *
+ */
+public class Init {
 
 	public static void main(String[] args) {
 

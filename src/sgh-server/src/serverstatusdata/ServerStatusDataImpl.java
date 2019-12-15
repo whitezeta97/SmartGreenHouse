@@ -15,20 +15,20 @@ public class ServerStatusDataImpl implements ServerStatusData {
 	private volatile boolean isManualMode;
 	private volatile boolean isWatering;
 	private volatile SghPumpStates currentState;
-	private BlockingQueue<Pair<Float, Date>> umidityValuesList;
+	private BlockingQueue<Pair<Float, Date>> humidityValuesList;
 	private BlockingQueue<Pair<Long, Date>> wateringsList;
 	private BlockingQueue<Date> warningsList;
 
 	private static final int LIST_SIZE = 100;
 
 	public ServerStatusDataImpl() {
-		this.umidityValuesList = new ArrayBlockingQueue<>(ServerStatusDataImpl.LIST_SIZE);
+		this.humidityValuesList = new ArrayBlockingQueue<>(ServerStatusDataImpl.LIST_SIZE);
 		this.wateringsList = new ArrayBlockingQueue<>(ServerStatusDataImpl.LIST_SIZE);
 		this.warningsList = new ArrayBlockingQueue<>(ServerStatusDataImpl.LIST_SIZE);
 	}
 
 	/**
-	 * Removes an element from the list if it's full.
+	 * Removes the first element from the list if it's full.
 	 * 
 	 * @param list
 	 *            the list that must be managed.
@@ -55,9 +55,9 @@ public class ServerStatusDataImpl implements ServerStatusData {
 	}
 
 	@Override
-	public void addUmidityValuesListElement(float umidityValue, Date receivingDate) {
-		this.manageListFull(this.umidityValuesList);
-		this.umidityValuesList.add(new Pair<Float, Date>(umidityValue, receivingDate));
+	public void addHumidityValuesListElement(float humidityValue, Date receivingDate) {
+		this.manageListFull(this.humidityValuesList);
+		this.humidityValuesList.add(new Pair<Float, Date>(humidityValue, receivingDate));
 
 	}
 
@@ -90,8 +90,8 @@ public class ServerStatusDataImpl implements ServerStatusData {
 	}
 
 	@Override
-	public BlockingQueue<Pair<Float, Date>> getUmidityValuesList() {
-		return this.umidityValuesList;
+	public BlockingQueue<Pair<Float, Date>> getHumidityValuesList() {
+		return this.humidityValuesList;
 	}
 
 	@Override

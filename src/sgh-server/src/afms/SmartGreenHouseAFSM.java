@@ -56,7 +56,7 @@ public class SmartGreenHouseAFSM implements SghAfsm {
 	}
 
 	/* Manages the received humidity. */
-	private void manageUmidity(final float humidity) {
+	private void manageHumidity(final float humidity) {
 
 		if (this.serverData.getCurrentState().equals(SghPumpStates.PUMP_OFF) && humidity < UMIN) {
 			this.timer.start(T_MAX);
@@ -147,10 +147,10 @@ public class SmartGreenHouseAFSM implements SghAfsm {
 		System.out.println("SERVER: Received: " + humidity);
 
 		if (humidity >= 0 && humidity <= 100) {
-			this.serverData.addUmidityValuesListElement(humidity, new Date());
-			this.manageUmidity(humidity);
+			this.serverData.addHumidityValuesListElement(humidity, new Date());
+			this.manageHumidity(humidity);
 		} else {
-			System.out.println("SERVER: Received wrong umidty value");
+			System.out.println("SERVER: Received wrong humidty value");
 		}
 
 	}

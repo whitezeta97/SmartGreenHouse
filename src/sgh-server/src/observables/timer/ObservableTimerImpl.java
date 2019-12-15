@@ -23,10 +23,12 @@ public class ObservableTimerImpl extends AbstractObservable implements Observabl
 		};
 	}
 
+	@Override
 	public synchronized void start(final long period) {
 		this.tickHandle = this.scheduler.scheduleAtFixedRate(this.tickTask, period, period, TimeUnit.MILLISECONDS);
 	}
 
+	@Override
 	public synchronized void stop() {
 
 		if (this.tickHandle != null) {
@@ -36,6 +38,7 @@ public class ObservableTimerImpl extends AbstractObservable implements Observabl
 
 	}
 
+	@Override
 	public synchronized void scheduleTick(final long deltat) {
 		this.scheduler.schedule(this.tickTask, deltat, TimeUnit.MILLISECONDS);
 	}
