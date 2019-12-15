@@ -148,6 +148,7 @@ public class SmartGreenHouseAFSM implements SghAfsm {
 
 		if (humidity >= 0 && humidity <= 100) {
 			this.serverData.addHumidityValuesListElement(humidity, new Date());
+			this.msgService.sendMsg(String.valueOf(humidity));
 			this.manageHumidity(humidity);
 		} else {
 			System.out.println("SERVER: Received wrong humidty value");
