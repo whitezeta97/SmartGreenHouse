@@ -2,6 +2,12 @@ package eventloop;
 
 import observer.event.EventObserver;
 
-public interface EventLoopObserver extends EventLoop, EventObserver{
+/**
+ * 
+ * Represents an Event Loop observer, getting notified whenever an observed
+ * event occurs.
+ *
+ */
+public interface EventLoopObserver extends EventLoop, EventObserver {
 
 }

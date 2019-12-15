@@ -11,11 +11,19 @@ public class ObservableMsgServiceImpl extends AbstractObservable implements Obse
 	private String port;
 	private int rate;
 
+	/**
+	 * 
+	 * @param port
+	 *            the serial port name.
+	 * @param rate
+	 *            the serial rate.
+	 */
 	public ObservableMsgServiceImpl(final String port, final int rate) {
 		this.port = port;
 		this.rate = rate;
 	}
 
+	@Override
 	public void init() {
 		try {
 			channel = new ExtendedSerialCommChannel(port, rate);
@@ -40,6 +48,7 @@ public class ObservableMsgServiceImpl extends AbstractObservable implements Obse
 		}).start();
 	}
 
+	@Override
 	public void sendMsg(String msg) {
 		this.channel.sendMsg(msg);
 	}

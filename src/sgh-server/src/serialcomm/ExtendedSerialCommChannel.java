@@ -79,13 +79,11 @@ public class ExtendedSerialCommChannel implements CommChannel, SerialPortEventLi
 
 	@Override
 	public String receiveMsg() throws InterruptedException {
-		// TODO Auto-generated method stub
 		return this.queue.take();
 	}
 
 	@Override
 	public boolean isMsgAvailable() {
-		// TODO Auto-generated method stub
 		return !this.queue.isEmpty();
 	}
 
@@ -108,7 +106,7 @@ public class ExtendedSerialCommChannel implements CommChannel, SerialPortEventLi
 	 * Handle an event on the serial port. Read the data and print it.
 	 */
 	@Override
-	public void serialEvent(SerialPortEvent event) {
+	public void serialEvent(final SerialPortEvent event) {
 		/* if there are bytes received in the input buffer */
 		if (event.isRXCHAR()) {
 			try {
@@ -170,7 +168,7 @@ public class ExtendedSerialCommChannel implements CommChannel, SerialPortEventLi
 			}
 		}
 
-		public void sendMsgToAndroidEmulator(String msg) {
+		public void sendMsgToAndroidEmulator(final String msg) {
 			if (this.socket != null) {
 				PrintWriter out;
 				try {

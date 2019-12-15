@@ -6,9 +6,14 @@ import events.ControllerMsgEvent;
 import events.EdgeMsgEvent;
 import observables.msgservice.ObservableMsgService;
 import observables.timer.ObservableTimer;
-import serverdata.ServerData;
-import utilities.SghStates;
+import serverstatusdata.ServerStatusData;
+import utilities.SghPumpStates;
 
+/**
+ * 
+ * Implements the SGH Server Asynchronous Finite State Machine.
+ *
+ */
 public class SmartGreenHouseAFSM implements SghAfsm {
 
 	private static float UMIN = 30;
@@ -23,10 +28,20 @@ public class SmartGreenHouseAFSM implements SghAfsm {
 	private ObservableMsgService msgService;
 	private ObservableTimer timer;
 
-	private ServerData serverData;
+	private ServerStatusData serverData;
 
+	/**
+	 * 
+	 * @param timer
+	 *            the Observable Timer that generates tick events.
+	 * @param msgService
+	 *            the Message Service to send/receive message events to/from SGH
+	 *            Controller.
+	 * @param serverData
+	 *            the Server Status data.
+	 */
 	public SmartGreenHouseAFSM(final ObservableTimer timer, final ObservableMsgService msgService,
-			final ServerData serverData) {
+			final ServerStatusData serverData) {
 
 		this.timer = timer;
 		this.msgService = msgService;
@@ -34,31 +49,32 @@ public class SmartGreenHouseAFSM implements SghAfsm {
 
 		System.out.println("Server started at: " + new Date());
 
-		this.serverData.setCurrentState(SghStates.PUMP_OFF);
+		this.serverData.setCurrentState(SghPumpStates.PUMP_OFF);
 
 		System.out.println("Server state: " + this.serverData.getCurrentState());
 
 	}
 
-	private void manageUmidity(float umidity) {
+	/* Manages the received humidity. */
+	private void manageUmidity(final float humidity) {
 
-		if (this.serverData.getCurrentState().equals(SghStates.PUMP_OFF) && umidity < UMIN) {
+		if (this.serverData.getCurrentState().equals(SghPumpStates.PUMP_OFF) && humidity < UMIN) {
 			this.timer.start(T_MAX);
 			this.serverData.setWatering(true);
 			this.wateringStartedTime = System.currentTimeMillis();
 			System.out.println("SERVER: Watering STARTED");
 		}
 
-		if (umidity >= U_MED && umidity <= UMIN) {
-			this.serverData.setCurrentState(SghStates.P_MIN);
+		if (humidity >= U_MED && humidity <= UMIN) {
+			this.serverData.setCurrentState(SghPumpStates.P_MIN);
 
-		} else if (umidity >= U_LOW && umidity < U_MED) {
-			this.serverData.setCurrentState(SghStates.P_MED);
+		} else if (humidity >= U_LOW && humidity < U_MED) {
+			this.serverData.setCurrentState(SghPumpStates.P_MED);
 
-		} else if (umidity < U_LOW) {
-			this.serverData.setCurrentState(SghStates.P_MAX);
+		} else if (humidity < U_LOW) {
+			this.serverData.setCurrentState(SghPumpStates.P_MAX);
 
-		} else if (!this.serverData.getCurrentState().equals(SghStates.PUMP_OFF) && umidity >= UMIN + DELTAU) {
+		} else if (!this.serverData.getCurrentState().equals(SghPumpStates.PUMP_OFF) && humidity >= UMIN + DELTAU) {
 			this.timer.stop();
 			this.serverData.setWatering(false);
 
@@ -66,7 +82,7 @@ public class SmartGreenHouseAFSM implements SghAfsm {
 
 			this.wateringStoppedTime = System.currentTimeMillis();
 
-			this.serverData.setCurrentState(SghStates.PUMP_OFF);
+			this.serverData.setCurrentState(SghPumpStates.PUMP_OFF);
 			this.serverData.addWateringsListElement(this.wateringStoppedTime - this.wateringStartedTime, new Date());
 		}
 
@@ -79,7 +95,7 @@ public class SmartGreenHouseAFSM implements SghAfsm {
 	@Override
 	public void manageControllerMsgEvent(final ControllerMsgEvent ev) {
 
-		String msg = ((ControllerMsgEvent) ev).getMsg();
+		final String msg = ((ControllerMsgEvent) ev).getMsg();
 		System.out.println("SERVER: Received: " + msg);
 
 		if (msg.equals("manualmodeon")) {
@@ -90,7 +106,7 @@ public class SmartGreenHouseAFSM implements SghAfsm {
 
 		} else if (msg.equals("manualmodeoff")) {
 			this.serverData.setManualMode(false);
-			this.serverData.setCurrentState(SghStates.PUMP_OFF);
+			this.serverData.setCurrentState(SghPumpStates.PUMP_OFF);
 
 			this.msgService.sendMsg(this.serverData.getCurrentState().toString());
 
@@ -110,7 +126,7 @@ public class SmartGreenHouseAFSM implements SghAfsm {
 		}
 
 		this.serverData.setWatering(false);
-		this.serverData.setCurrentState(SghStates.PUMP_OFF);
+		this.serverData.setCurrentState(SghPumpStates.PUMP_OFF);
 		this.serverData.addWarningsListElement(new Date());
 		this.serverData.addWateringsListElement(this.wateringStoppedTime - this.wateringStartedTime, new Date());
 
@@ -122,17 +138,17 @@ public class SmartGreenHouseAFSM implements SghAfsm {
 	}
 
 	@Override
-	public void manageEdgeMsgEvent(EdgeMsgEvent ev) {
+	public void manageEdgeMsgEvent(final EdgeMsgEvent ev) {
 		if (this.serverData.isManualMode()) {
 			return;
 		}
 
-		float umidity = ((EdgeMsgEvent) ev).getMsg();
-		System.out.println("SERVER: Received: " + umidity);
+		final float humidity = ((EdgeMsgEvent) ev).getMsg();
+		System.out.println("SERVER: Received: " + humidity);
 
-		if (umidity >= 0 && umidity <= 100) {
-			this.serverData.addUmidityValuesListElement(umidity, new Date());
-			this.manageUmidity(umidity);
+		if (humidity >= 0 && humidity <= 100) {
+			this.serverData.addUmidityValuesListElement(humidity, new Date());
+			this.manageUmidity(humidity);
 		} else {
 			System.out.println("SERVER: Received wrong umidty value");
 		}

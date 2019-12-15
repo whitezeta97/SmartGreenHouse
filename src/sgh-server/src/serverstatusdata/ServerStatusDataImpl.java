@@ -1,30 +1,40 @@
-package serverdata;
+package serverstatusdata;
 
 import java.util.Date;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 import utilities.Pair;
-import utilities.SghStates;
+import utilities.SghPumpStates;
 
-public class ServerDataImpl implements ServerData {
+/**
+ * Implements the current SGH status and data.
+ *
+ */
+public class ServerStatusDataImpl implements ServerStatusData {
 	private volatile boolean isManualMode;
 	private volatile boolean isWatering;
-	private volatile SghStates currentState;
+	private volatile SghPumpStates currentState;
 	private BlockingQueue<Pair<Float, Date>> umidityValuesList;
 	private BlockingQueue<Pair<Long, Date>> wateringsList;
 	private BlockingQueue<Date> warningsList;
 
 	private static final int LIST_SIZE = 100;
 
-	public ServerDataImpl() {
-		this.umidityValuesList = new ArrayBlockingQueue<>(ServerDataImpl.LIST_SIZE);
-		this.wateringsList = new ArrayBlockingQueue<>(ServerDataImpl.LIST_SIZE);
-		this.warningsList = new ArrayBlockingQueue<>(ServerDataImpl.LIST_SIZE);
+	public ServerStatusDataImpl() {
+		this.umidityValuesList = new ArrayBlockingQueue<>(ServerStatusDataImpl.LIST_SIZE);
+		this.wateringsList = new ArrayBlockingQueue<>(ServerStatusDataImpl.LIST_SIZE);
+		this.warningsList = new ArrayBlockingQueue<>(ServerStatusDataImpl.LIST_SIZE);
 	}
 
+	/**
+	 * Removes an element from the list if it's full.
+	 * 
+	 * @param list
+	 *            the list that must be managed.
+	 */
 	private <T> void manageListFull(final BlockingQueue<T> list) {
-		if (list.size() >= ServerDataImpl.LIST_SIZE) {
+		if (list.size() >= ServerStatusDataImpl.LIST_SIZE) {
 			list.poll();
 		}
 	}
@@ -40,7 +50,7 @@ public class ServerDataImpl implements ServerData {
 	}
 
 	@Override
-	public void setCurrentState(SghStates currentState) {
+	public void setCurrentState(SghPumpStates currentState) {
 		this.currentState = currentState;
 	}
 
@@ -75,7 +85,7 @@ public class ServerDataImpl implements ServerData {
 	}
 
 	@Override
-	public SghStates getCurrentState() {
+	public SghPumpStates getCurrentState() {
 		return this.currentState;
 	}
 

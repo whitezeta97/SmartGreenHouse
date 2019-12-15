@@ -5,6 +5,10 @@ import java.util.concurrent.*;
 import events.TickEventImpl;
 import observables.AbstractObservable;
 
+/**
+ * Implements an observable Timer that generates an event at every tick.
+ * 
+ */
 public class ObservableTimerImpl extends AbstractObservable implements ObservableTimer {
 
 	private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);

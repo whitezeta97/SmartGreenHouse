@@ -12,16 +12,28 @@ import observables.msgservice.ObservableMsgServiceImpl;
 import observables.serverdataservice.ObservableSghDataServiceImpl;
 import observables.timer.ObservableTimer;
 import observables.timer.ObservableTimerImpl;
-import serverdata.ServerData;
-import serverdata.ServerDataImpl;
+import serverstatusdata.ServerStatusData;
+import serverstatusdata.ServerStatusDataImpl;
 
+/**
+ * 
+ * Implements an Event Loop Observer.
+ *
+ */
 public class EventLoopImpl extends AbstractEventLoop {
 
 	private SghAfsm asincFiniteStateMachine;
 
-	public EventLoopImpl(String port, int rate) {
+	/**
+	 * 
+	 * @param port
+	 *            the name of the serial port to communicate with SGH Controller.
+	 * @param rate
+	 *            the serial rate to communicate with SGH Controller.
+	 */
+	public EventLoopImpl(final String port, final int rate) {
 
-		final ServerData serverData = new ServerDataImpl();
+		final ServerStatusData serverData = new ServerStatusDataImpl();
 
 		final ObservableMsgService msgService = new ObservableMsgServiceImpl(port, rate);
 		msgService.addObserver(this);
@@ -41,7 +53,7 @@ public class EventLoopImpl extends AbstractEventLoop {
 	}
 
 	@Override
-	protected void processEvent(Event ev) {
+	protected void processEvent(final Event ev) {
 		try {
 			if (ev instanceof ControllerMsgEvent) {
 				this.asincFiniteStateMachine.manageControllerMsgEvent((ControllerMsgEvent) ev);
