@@ -5,12 +5,14 @@
 #include "ServoMotor.h"
 #include "ModeManagementTask.h"
 #include "PumpsManagementTask.h"
+#include "ServerCommunicationTask.h"
 #include "Scheduler.h"
 
 #define BAUDE_RATE 9600
 #define SCHEDULER_PERIOD 100
 #define MODE_MANAGEMENT_TASK_PERIOD 200
 #define PUMP_MANAGEMENT_TASK_PERIOD 200
+#define SERVER_COMMUNICATION_TASK_PERIOD 200
 #define ECHO_SONAR_PIN 7
 #define TRIG_SONAR_PIN 8
 #define TX_PIN 3
@@ -33,13 +35,17 @@ void setup(){
   LedExt* flowLed = new LedExt(PIN_FLOW_LED);
   ServoMotor* servo = new ServoMotor(PIN_SERVO);
 
-  Task* t1 = new ModeManagementTask(distanceDetector, bluetooth, autoLed, manualLed);
-  t1->init(MODE_MANAGEMENT_TASK_PERIOD);
-  sched.addTask(t1); 
+  Task* modeManagementTask = new ModeManagementTask(distanceDetector, bluetooth, autoLed, manualLed);
+  modeManagementTask->init(MODE_MANAGEMENT_TASK_PERIOD);
+  sched.addTask(modeManagementTask); 
 
-  Task* t2 = new PumpsManagementTask(servo, flowLed);
-  t2->init(PUMP_MANAGEMENT_TASK_PERIOD);
-  sched.addTask(t2);
+  Task* pumpsManagementTask = new PumpsManagementTask(servo, flowLed);
+  pumpsManagementTask->init(PUMP_MANAGEMENT_TASK_PERIOD);
+  sched.addTask(pumpsManagementTask);
+  
+  Task* serverCommunicationTask = new ServerCommunicationTask();
+  serverCommunicationTask->init(SERVER_COMMUNICATION_TASK_PERIOD);
+  sched.addTask(serverCommunicationTask);
   
 }
  

@@ -3,11 +3,20 @@
 
 #include "Task.h"
 #include "MsgService.h"
+#include "Mode.h"
+
+#define PUMP_OFF 		"PUMP_OFF"
+#define P_MIN			"P_MIN"
+#define P_MED 			"P_MED"
+#define P_MAX 			"P_MAX"
+
+#define MANUALMODE_OFF 	"manualmodeoff"
+#define MANUALMODE_ON 	"manualmodeon"
 
 class ServerCommunicationTask: public Task {
 	
 private:	
-	bool isManualMode;
+	Mode currentMode;
 	
 	bool manageManualModeOffState(Msg* message);
 

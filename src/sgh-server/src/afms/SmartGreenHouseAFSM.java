@@ -15,12 +15,13 @@ import utilities.SghPumpStates;
  *
  */
 public class SmartGreenHouseAFSM implements SghAfsm {
-
-	private static float UMIN = 30;
-	private static float U_MED = 20;
-	private static float U_LOW = 10;
-	private static float DELTAU = 5;
-	private static int T_MAX = 5000;
+	private static final String MANUALMODE_OFF = "manualmodeoff";
+	private static final String MANUALMODE_ON = "manualmodeon";
+	private static final float UMIN = 30;
+	private static final float U_MED = 20;
+	private static final float U_LOW = 10;
+	private static final float DELTAU = 5;
+	private static final int T_MAX = 5000;
 
 	private long wateringStartedTime;
 	private long wateringStoppedTime;
@@ -98,13 +99,13 @@ public class SmartGreenHouseAFSM implements SghAfsm {
 		final String msg = ((ControllerMsgEvent) ev).getMsg();
 		System.out.println("SERVER: Received: " + msg);
 
-		if (msg.equals("manualmodeon")) {
+		if (msg.equals(SmartGreenHouseAFSM.MANUALMODE_ON)) {
 			this.serverData.setManualMode(true);
 			this.timer.stop();
 
 			System.out.println("SERVER: Manual Mode ON");
 
-		} else if (msg.equals("manualmodeoff")) {
+		} else if (msg.equals(SmartGreenHouseAFSM.MANUALMODE_OFF)) {
 			this.serverData.setManualMode(false);
 			this.serverData.setCurrentState(SghPumpStates.PUMP_OFF);
 
