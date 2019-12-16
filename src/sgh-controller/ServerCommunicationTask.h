@@ -5,7 +5,11 @@
 #include "MsgService.h"
 
 class ServerCommunicationTask: public Task {
-private:
+	
+private:	
+	bool isManualMode;
+	
+	bool manageManualModeOffState(Msg* message);
 
 public:
     ServerCommunicationTask();

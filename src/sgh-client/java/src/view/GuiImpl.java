@@ -184,7 +184,7 @@ public class GuiImpl extends Thread implements Gui {
 	 */
 	private void manageListsData() {
 		this.controller.getDataForView().getHumidityValuesList().stream()
-				.map(i -> i.getX().toString() + " on " + i.getY().toString())
+				.map(i -> i.getX().toString() + "% on " + i.getY().toString())
 				.filter(i -> !this.humidityJList.getModel().toString().contains(i)).iterator()
 				.forEachRemaining(i -> this.viewHumidityList.addElement(i));
 
