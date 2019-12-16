@@ -16,7 +16,7 @@
 #define TX_PIN 3
 #define RX_PIN 2
 #define PIN_AUTO_LED 4
-#define PIN_MANUAL_LED 6
+#define PIN_MANUAL_LED 5
 #define PIN_FLOW_LED 9
 #define PIN_SERVO 10
 
