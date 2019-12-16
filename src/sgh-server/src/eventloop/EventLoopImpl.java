@@ -17,7 +17,8 @@ import serverstatusdata.ServerStatusDataImpl;
 
 /**
  * 
- * Implements an Event Loop Observer.
+ * Implements an Event Loop Observer, getting notified whenever an observed
+ * event occurs.
  *
  */
 public class EventLoopImpl extends AbstractEventLoop {

@@ -1,7 +1,7 @@
 package utilities;
 
 /**
- * Enumeration that contains every message type identifiers from server to
+ * Enumeration that contains every message type identifier from server to
  * client.
  *
  */

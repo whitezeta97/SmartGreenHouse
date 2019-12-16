@@ -5,6 +5,12 @@ import observables.AbstractObservable;
 import serialcomm.CommChannel;
 import serialcomm.ExtendedSerialCommChannel;
 
+/**
+ * 
+ * Implements an observable message service, generating an event whenever it
+ * gets a message from serial port.
+ *
+ */
 public class ObservableMsgServiceImpl extends AbstractObservable implements ObservableMsgService {
 
 	private CommChannel channel;
