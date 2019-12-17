@@ -2,7 +2,6 @@
 #include "Pumps.h"
 #include "Flow.h"
 #include "Humidity.h"
-#include <stdlib.h>
 
 ServerCommunicationTask::ServerCommunicationTask() {
 	this->currentMode = AUTOMATIC;
@@ -12,16 +11,26 @@ void ServerCommunicationTask::init(int period) {
     Task::init(period);
 }
 
-void ServerCommunicationTask::manageManualModeOffState(Msg* message) {
-	if (message->getContent() == PUMP_OFF) {
+bool ServerCommunicationTask::isNumber(String string) { 
+    for (int i = 0; i < string.length(); i++) { 
+      if (isdigit(string[i]) == false) {
+        return false;
+      }
+    }
+
+    return true; 
+} 
+
+void ServerCommunicationTask::manageManualModeOffState(String message) {
+	if (message == PUMP_OFF) {
 		pumps = OFF;
-	} else if (message->getContent() == P_MIN){
+	} else if (message == P_MIN){
 		flow = MINIMUM;
 		pumps = ON;
-	} else if (message->getContent() == P_MED) {
+	} else if (message == P_MED) {
 		pumps = ON;
 		flow = MEDIUM;
-	} else if (message->getContent() == P_MAX) {
+	} else if (message == P_MAX) {
 		pumps = ON;
 		flow = MAXIMUM;
 	}
@@ -33,15 +42,16 @@ void ServerCommunicationTask::tick() {
 		this->currentMode = mode;
 		MsgService.sendMsg(this->currentMode == MANUAL ? MANUALMODE_ON : MANUALMODE_OFF);
 	}
-	
-	Msg* msg = MsgService.receiveMsg();
-	
+
+  Msg* msg = MsgService.receiveMsg();
+	String msgString = MsgService.receiveMsg()->getContent();
+  	
 	if (this->currentMode == MANUAL) {
-		this->manageManualModeOffState(msg);
+		this->manageManualModeOffState(msgString);
 	}
 	
-	if (atoi(msg)) {
-		humidity = atoi(msg);
+	if (this->isNumber(msgString)) {
+		humidity = atoi(msgString.c_str());
 	}
 	
 	delete msg;

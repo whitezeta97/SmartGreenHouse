@@ -17,8 +17,9 @@ class ServerCommunicationTask: public Task {
 	
 private:	
 	Mode currentMode;
-	
-	bool manageManualModeOffState(Msg* message);
+
+  bool isNumber(String string);
+	void manageManualModeOffState(String message);
 
 public:
     ServerCommunicationTask();
