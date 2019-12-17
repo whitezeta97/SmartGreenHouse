@@ -12,19 +12,32 @@ import utilities.SghPumpStates;
  *
  */
 public class ServerStatusDataImpl implements ServerStatusData {
+	private static final int LIST_SIZE = 100;
+
 	private volatile boolean isManualMode;
 	private volatile boolean isWatering;
 	private volatile SghPumpStates currentState;
 	private BlockingQueue<Pair<Float, Date>> humidityValuesList;
 	private BlockingQueue<Pair<Long, Date>> wateringsList;
 	private BlockingQueue<Date> warningsList;
-
-	private static final int LIST_SIZE = 100;
+	private int listSize = 100;
 
 	public ServerStatusDataImpl() {
 		this.humidityValuesList = new ArrayBlockingQueue<>(ServerStatusDataImpl.LIST_SIZE);
 		this.wateringsList = new ArrayBlockingQueue<>(ServerStatusDataImpl.LIST_SIZE);
 		this.warningsList = new ArrayBlockingQueue<>(ServerStatusDataImpl.LIST_SIZE);
+	}
+
+	/**
+	 * 
+	 * @param listSize
+	 *            the size of humidity, watering and warnings lists.
+	 */
+	public ServerStatusDataImpl(final int listSize) {
+		this.listSize = listSize;
+		this.humidityValuesList = new ArrayBlockingQueue<>(this.listSize);
+		this.wateringsList = new ArrayBlockingQueue<>(this.listSize);
+		this.warningsList = new ArrayBlockingQueue<>(this.listSize);
 	}
 
 	/**

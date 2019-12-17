@@ -11,6 +11,8 @@ import utilities.Pair;
  *
  */
 public class ServerDataImpl implements ServerData {
+	private static final int LIST_SIZE = 100;
+
 	private volatile boolean isManualMode;
 	private volatile boolean isWatering;
 	private volatile String currentState;
@@ -18,13 +20,24 @@ public class ServerDataImpl implements ServerData {
 	private List<Pair<Float, String>> wateringsList;
 	private List<String> warningsList;
 	private String lastUpdateFromServer;
-
-	private static final int LIST_SIZE = 100;
+	private int listSize;
 
 	public ServerDataImpl() {
-		this.umidityValuesList = new ArrayList<>();
-		this.wateringsList = new ArrayList<>();
-		this.warningsList = new ArrayList<>();
+		this.umidityValuesList = new ArrayList<>(ServerDataImpl.LIST_SIZE);
+		this.wateringsList = new ArrayList<>(ServerDataImpl.LIST_SIZE);
+		this.warningsList = new ArrayList<>(ServerDataImpl.LIST_SIZE);
+	}
+
+	/**
+	 * 
+	 * @param listSize
+	 *            the size of humidity, watering and warnings lists.
+	 */
+	public ServerDataImpl(final int listSize) {
+		this.listSize = listSize;
+		this.umidityValuesList = new ArrayList<>(this.listSize);
+		this.wateringsList = new ArrayList<>(this.listSize);
+		this.warningsList = new ArrayList<>(this.listSize);
 	}
 
 	/* Remove the first element of the list if it's full. */
