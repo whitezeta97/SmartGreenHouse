@@ -87,14 +87,6 @@
             android:enabled="false"
             android:text="Pumps on" />
 
-        <ListView
-            android:id="@+id/lstLista"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/colorAccent"
-            android:backgroundTint="@color/colorAccent"
-            android:listSelector="@android:color/black" />
-
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

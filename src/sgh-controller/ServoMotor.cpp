@@ -1,7 +1,6 @@
 #include "ServoMotor.h"
 
 ServoMotor::ServoMotor(int pin) {
-    this->pin = pin;
     this->servo.attach(pin);
 }
 

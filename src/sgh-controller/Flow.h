@@ -2,6 +2,7 @@
 #define __FLOW__
 
 enum Flow {
+	ZERO,
 	MINIMUM,
 	MEDIUM,
 	MAXIMUM

@@ -13,11 +13,13 @@ public class C {
     public class message {
         public static final String CONNECTION_ENABLE = "connection_enable";
         public static final String CONNECTION_DISABLED = "connection_disabled";
-        public static final String PUMPS_OFF = "pumps_off";
-        public static final String PUMPS_ON = "pumps_on";
-        public static final String MINIMUM_FLOW = "minimum_flow";
-        public static final String MEDIUM_FLOW = "medium_flow";
-        public static final String MAXIMUM_FLOW = "maximum_flow";
+        public static final String AUTOMATIC_MODE = "0";
+        public static final String MANUAL_MODE = "1";
+        public static final String PUMPS_OFF = "2";
+        public static final String PUMPS_ON = "3";
+        public static final String MINIMUM_FLOW = "4";
+        public static final String MEDIUM_FLOW = "5";
+        public static final String MAXIMUM_FLOW = "6";
     }
 
     public class utility {
