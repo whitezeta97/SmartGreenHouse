@@ -2,7 +2,10 @@ package unibo.mobileapp;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -29,6 +32,17 @@ public class MainActivity extends AppCompatActivity {
 
     private BluetoothAdapter btAdapter;
     private BluetoothChannel btChannel;
+    private final BroadcastReceiver br = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(action)) {
+                findViewById(R.id.connectBtn).setEnabled(true);
+                ((TextView) findViewById(R.id.statusLabel)).setText(String.format("Status : not connected"));
+                ((TextView) findViewById(R.id.humidityLabel)).setText(String.format(""));
+            }
+        }
+    };
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -36,13 +50,16 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         btAdapter = BluetoothAdapter.getDefaultAdapter();
         if (this.btAdapter != null && !btAdapter.isEnabled()){
-            startActivityForResult(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE), C.bluetooth.ENABLE_BT_REQUEST);
+            startActivityForResult(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE),
+                    C.bluetooth.ENABLE_BT_REQUEST);
         }
-
+        registerReceiver(br, new IntentFilter(BluetoothDevice.ACTION_ACL_DISCONNECTED));
         initUI();
     }
 
     private void initUI() {
+        ((TextView) findViewById(R.id.statusLabel)).setText(String.format("Status : not connected"));
+
         findViewById(R.id.connectBtn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -57,13 +74,14 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btnMode).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                boolean automaticMode = ((Button)findViewById(R.id.btnMode)).getText().equals(C.utility.MANUAL_MODE);
-                ((Button) findViewById(R.id.btnMode)).setText(automaticMode ? C.utility.AUTOMATIC_MODE :
+                boolean manualMode = ((Button)findViewById(R.id.btnMode)).getText().equals(C.utility.MANUAL_MODE);
+                ((Button) findViewById(R.id.btnMode)).setText(manualMode ? C.utility.AUTOMATIC_MODE :
                         C.utility.MANUAL_MODE);
-                findViewById(R.id.btnPumps).setEnabled(automaticMode ? false : true);
-                findViewById(R.id.rbMinimumFlow).setEnabled(automaticMode ? false : true);
-                findViewById(R.id.rbMedium).setEnabled(automaticMode ? false : true);
-                findViewById(R.id.rbMaximum).setEnabled(automaticMode ? false : true);
+                findViewById(R.id.btnPumps).setEnabled(manualMode ? true : false);
+                findViewById(R.id.rbMinimumFlow).setEnabled(manualMode ? true : false);
+                findViewById(R.id.rbMedium).setEnabled(manualMode ? true : false);
+                findViewById(R.id.rbMaximum).setEnabled(manualMode ? true : false);
+                btChannel.sendMessage(manualMode ? C.message.MANUAL_MODE : C.message.AUTOMATIC_MODE);
             }
         });
 
@@ -73,21 +91,19 @@ public class MainActivity extends AppCompatActivity {
                 RadioGroup radioGroup = findViewById(R.id.rdbGroup);
                 int radioId = radioGroup.getCheckedRadioButtonId();
                 RadioButton radioButton = findViewById(radioId);
-                String message = "";
                 boolean setPumpsOff = ((Button)findViewById(R.id.btnPumps)).getText().equals(C.utility.PUMPS_ON);
                 if (setPumpsOff) {
                     String flow = radioButton.getText().equals(C.utility.MINIMUM) ? C.message.MINIMUM_FLOW :
                             radioButton.getText().equals(C.utility.MEDIUM) ? C.message.MEDIUM_FLOW :
                                     C.message.MAXIMUM_FLOW;
-                    message = C.message.PUMPS_ON + "+" + flow;
+                    btChannel.sendMessage(flow);
                 } else {
-                    message = C.message.PUMPS_OFF + "+" + "0";
+                    btChannel.sendMessage(C.message.PUMPS_OFF);
                 }
                 ((Button) findViewById(R.id.btnPumps)).setText(setPumpsOff ? C.utility.PUMPS_OFF : C.utility.PUMPS_ON);
                 findViewById(R.id.rbMinimumFlow).setEnabled(setPumpsOff ? false : true);
                 findViewById(R.id.rbMedium).setEnabled(setPumpsOff ? false : true);
                 findViewById(R.id.rbMaximum).setEnabled(setPumpsOff ? false : true);
-                btChannel.sendMessage(message);
             }
         });
     }
@@ -95,9 +111,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        if (btAdapter.isDiscovering()) {
-            btAdapter.cancelDiscovery();
-        }
         btChannel.close();
     }
 
@@ -129,10 +142,10 @@ public class MainActivity extends AppCompatActivity {
             AsyncTask<Void, Void, Integer> execute = new ConnectToBluetoothServerTask(serverDevice, uuid, new ConnectionTask.EventListener() {
                 @Override
                 public void onConnectionActive(final BluetoothChannel channel) {
-
                     ((TextView) findViewById(R.id.statusLabel)).setText(String.format("Status : connected to server on device %s",
                             serverDevice.getName()));
                     findViewById(R.id.connectBtn).setEnabled(false);
+
                     btChannel = channel;
                     btChannel.registerListener(new RealBluetoothChannel.Listener() {
                         @Override
@@ -168,7 +181,7 @@ public class MainActivity extends AppCompatActivity {
         if (isNumeric(message)) {
             ((TextView) findViewById(R.id.humidityLabel)).setText("Humidity: " + message + " %");
         } else if (message.equals(C.message.CONNECTION_ENABLE)) {
-            ((Button)findViewById(R.id.btnMode)).setText(C.utility.AUTOMATIC_MODE);
+            ((Button)findViewById(R.id.btnMode)).setText(C.utility.MANUAL_MODE);
             findViewById(R.id.btnMode).setEnabled(true);
         } else if (message.equals(C.message.CONNECTION_DISABLED)) {
             findViewById(R.id.btnMode).setEnabled(false);
