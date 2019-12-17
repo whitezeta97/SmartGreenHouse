@@ -12,7 +12,7 @@ void ServerCommunicationTask::init(int period) {
     Task::init(period);
 }
 
-void ServerCommunicationTask::manageManualModeOffState(Msg* message) {
+bool ServerCommunicationTask::manageManualModeOffState(Msg* message) {
 	if (message->getContent() == PUMP_OFF) {
 		pumps = OFF;
 	} else if (message->getContent() == P_MIN){
@@ -28,21 +28,21 @@ void ServerCommunicationTask::manageManualModeOffState(Msg* message) {
 }
 
 void ServerCommunicationTask::tick() {
-	
+
 	if (this->currentMode != mode) {
 		this->currentMode = mode;
 		MsgService.sendMsg(this->currentMode == MANUAL ? MANUALMODE_ON : MANUALMODE_OFF);
 	}
-	
+
 	Msg* msg = MsgService.receiveMsg();
-	
+
 	if (this->currentMode == MANUAL) {
 		this->manageManualModeOffState(msg);
 	}
-	
+
 	if (atoi(msg)) {
 		humidity = atoi(msg);
 	}
-	
+
 	delete msg;
 }
