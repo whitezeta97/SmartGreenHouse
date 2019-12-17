@@ -1,3 +1,3 @@
 #include "Flow.h"
 
-Flow flow = MINIMUM;
+Flow flow = ZERO;
