@@ -9,7 +9,6 @@
 class ServoMotor {
 
 private:
-    int pin;
     ServoTimer2 servo;
 public:
     ServoMotor(int pin);
