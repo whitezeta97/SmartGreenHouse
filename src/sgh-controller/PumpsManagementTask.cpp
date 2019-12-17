@@ -1,12 +1,13 @@
 #include "PumpsManagementTask.h"
 #include "Mode.h"
 #include "Pumps.h"
-#include "Flow.h"
 
 PumpsManagementTask::PumpsManagementTask(ServoMotor* servo, LedExt* flowLed) {
     this->servo = servo;
     this->flowLed = flowLed;
-    this->pumpsOn = false;
+    this->currentFlow = ZERO;
+
+    this->servo->setAngle(ZERO_ANGLE);
 }
 
 void PumpsManagementTask::init(int period) {
@@ -14,16 +15,16 @@ void PumpsManagementTask::init(int period) {
 }
 
 void PumpsManagementTask::tick() {
-    if (this->pumpsOn == false && pumps == ON) {
+    if (pumps == ON && this->currentFlow != flow) {
         this->flowLed->setIntensity(flow == MINIMUM ? VALUE_MINIMUM_FLOW :
             flow == MEDIUM ? VALUE_MEDIUM_FLOW : VALUE_MAXIMUM_FLOW);
         this->flowLed->turnOn();
         this->servo->setAngle(flow == MINIMUM ? MINIMUM_ANGLE :
             flow == MEDIUM ? MEDIUM_ANGLE : MAXIMUM_ANGLE);
-        this->pumpsOn = true;
-    } else if (this->pumpsOn && pumps == OFF) {
-        this->flowLed->turnOff();
+        this->currentFlow = flow;
+    } else if (pumps == OFF && this->currentFlow != ZERO) {
         this->servo->setAngle(ZERO_ANGLE);
-        this->pumpsOn = false;
+        this->flowLed->turnOff();
+        this->currentFlow = ZERO;
     }
 }
