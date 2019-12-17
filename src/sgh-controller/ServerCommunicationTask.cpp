@@ -22,18 +22,18 @@ bool ServerCommunicationTask::isNumber(String string) {
 }
 
 void ServerCommunicationTask::manageManualModeOffState(String message) {
-	if (message == PUMP_OFF) {
-		pumps = OFF;
-	} else if (message == P_MIN){
-		flow = MINIMUM;
-		pumps = ON;
-	} else if (message == P_MED) {
-		pumps = ON;
-		flow = MEDIUM;
-	} else if (message == P_MAX) {
-		pumps = ON;
-		flow = MAXIMUM;
-	}
+	if (message.equals(PUMP_OFF)) {
+    pumps = OFF;
+  } else if (message.equals(P_MIN)) {
+    flow = MINIMUM;
+    pumps = ON;
+  } else if (message.equals(P_MED)) {
+    pumps = ON;
+    flow = MEDIUM;
+  } else if (message.equals(P_MAX)) {
+    pumps = ON;
+    flow = MAXIMUM;
+  }
 }
 
 void ServerCommunicationTask::tick() {
