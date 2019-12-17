@@ -53,7 +53,7 @@ public class ObservableSghDataServiceImpl extends AbstractVerticle implements Ob
 		if (res == null) {
 			sendError(400, response);
 		} else {
-			final float value = res.getFloat("value");
+			final int value = res.getInteger("value");
 			response.setStatusCode(200).end();
 			final EdgeMsgEvent humidityEvent = new EdgeMsgEventImpl(value);
 			this.notifyEvent(humidityEvent);
@@ -69,7 +69,7 @@ public class ObservableSghDataServiceImpl extends AbstractVerticle implements Ob
 		arr.add(new JsonObject().put(MessageTypes.IS_WATERING.toString(), this.serverData.isWatering()));
 		arr.add(new JsonObject().put(MessageTypes.SGH_STATE.toString(), this.serverData.getCurrentState()));
 
-		for (final Pair<Float, Date> elem : this.serverData.getHumidityValuesList()) {
+		for (final Pair<Integer, Date> elem : this.serverData.getHumidityValuesList()) {
 			arr.add(new JsonObject().put(MessageTypes.HUMIDITY.toString(),
 					new JsonObject().put(MessageTypes.HUMIDITY_VALUE.toString(), elem.getX())
 							.put(MessageTypes.HUMIDITY_DATE.toString(), elem.getY().toString())));

@@ -7,19 +7,19 @@ package events;
  */
 public class EdgeMsgEventImpl implements EdgeMsgEvent {
 
-	private float msg;
+	private int msgValue;
 
 	/**
 	 * 
 	 * @param value
 	 *            the value content in the message.
 	 */
-	public EdgeMsgEventImpl(final float value) {
-		this.msg = value;
+	public EdgeMsgEventImpl(final int value) {
+		this.msgValue = value;
 	}
 
 	@Override
-	public float getMsg() {
-		return this.msg;
+	public int getMsgValue() {
+		return this.msgValue;
 	}
 }

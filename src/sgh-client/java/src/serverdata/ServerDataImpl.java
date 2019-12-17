@@ -16,7 +16,7 @@ public class ServerDataImpl implements ServerData {
 	private volatile boolean isManualMode;
 	private volatile boolean isWatering;
 	private volatile String currentState;
-	private List<Pair<Float, String>> umidityValuesList;
+	private List<Pair<Integer, String>> umidityValuesList;
 	private List<Pair<Float, String>> wateringsList;
 	private List<String> warningsList;
 	private String lastUpdateFromServer;
@@ -63,14 +63,14 @@ public class ServerDataImpl implements ServerData {
 	}
 
 	@Override
-	public void addUmidityValuesListElement(Float umidityValue, String receivingDate) {
+	public void addUmidityValuesListElement(final int umidityValue, String receivingDate) {
 		this.manageListFull(this.umidityValuesList);
-		this.umidityValuesList.add(new Pair<Float, String>(umidityValue, receivingDate));
+		this.umidityValuesList.add(new Pair<Integer, String>(umidityValue, receivingDate));
 
 	}
 
 	@Override
-	public void addWateringsListElement(Float wateringDuration, String wateringDate) {
+	public void addWateringsListElement(final float wateringDuration, String wateringDate) {
 		this.manageListFull(this.wateringsList);
 		this.wateringsList.add(new Pair<Float, String>(wateringDuration, wateringDate));
 	}
@@ -104,7 +104,7 @@ public class ServerDataImpl implements ServerData {
 	}
 
 	@Override
-	public List<Pair<Float, String>> getHumidityValuesList() {
+	public List<Pair<Integer, String>> getHumidityValuesList() {
 		return this.umidityValuesList;
 	}
 

@@ -5,10 +5,10 @@
 #include "MsgService.h"
 #include "Mode.h"
 
-#define PUMP_OFF 		"PUMP_OFF"
-#define P_MIN			"P_MIN"
-#define P_MED 			"P_MED"
-#define P_MAX 			"P_MAX"
+#define PUMP_OFF 		    "PUMP_OFF"
+#define P_MIN			      "P_MIN"
+#define P_MED 			    "P_MED"
+#define P_MAX 			    "P_MAX"
 
 #define MANUALMODE_OFF 	"manualmodeoff"
 #define MANUALMODE_ON 	"manualmodeon"
@@ -16,15 +16,16 @@
 class ServerCommunicationTask: public Task {
 	
 private:	
-	Mode currentMode;
-
+  Mode currentMode;
+  
   bool isNumber(String string);
 	void manageManualModeOffState(String message);
 
 public:
-    ServerCommunicationTask();
-    void init(int period);
-	void tick();
+  ServerCommunicationTask();
+  void init(int period);
+  void tick();
+  
 };
 
 #endif

@@ -45,7 +45,7 @@ public interface ServerStatusData {
 	 * @param receivingDate
 	 *            the receiving Date of the humidity value.
 	 */
-	void addHumidityValuesListElement(float humidityValue, Date receivingDate);
+	void addHumidityValuesListElement(int humidityValue, Date receivingDate);
 
 	/**
 	 * Adds a watering to the waterings list. If the list is full the first element
@@ -93,7 +93,7 @@ public interface ServerStatusData {
 	 * 
 	 * @return the humidity values and Date list.
 	 */
-	BlockingQueue<Pair<Float, Date>> getHumidityValuesList();
+	BlockingQueue<Pair<Integer, Date>> getHumidityValuesList();
 
 	/**
 	 * Returns the received waterings Dates.

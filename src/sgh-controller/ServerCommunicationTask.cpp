@@ -8,17 +8,17 @@ ServerCommunicationTask::ServerCommunicationTask() {
 }
 
 void ServerCommunicationTask::init(int period) {
-    Task::init(period);
+  Task::init(period);
 }
 
 bool ServerCommunicationTask::isNumber(String string) {
-    for (int i = 0; i < string.length(); i++) {
-      if (isdigit(string[i]) == false) {
-        return false;
-      }
+  for (int i = 0; i < string.length(); i++) {
+    if (isdigit(string[i]) == false) {
+      return false;
     }
+  }
 
-    return true;
+  return true;
 }
 
 void ServerCommunicationTask::manageManualModeOffState(String message) {

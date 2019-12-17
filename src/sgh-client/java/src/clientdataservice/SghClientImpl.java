@@ -1,5 +1,7 @@
 package clientdataservice;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -19,7 +21,7 @@ import utilities.MessageTypes;
  */
 public class SghClientImpl extends Thread implements SghClient {
 
-	private static final int SLEEP_TIME = 1000;
+	private static final int SLEEP_TIME = 800;
 	private static final int MAX_SIZE = 100;
 
 	private String host;
@@ -87,7 +89,7 @@ public class SghClientImpl extends Thread implements SghClient {
 		for (final JsonArray arr : this.receivedDataFromServer) {
 
 			for (int i = 0; i < arr.size(); i++) {
-				JsonObject receivedJSonObject = arr.getJsonObject(i);
+				final JsonObject receivedJSonObject = arr.getJsonObject(i);
 
 				if (receivedJSonObject.containsKey(MessageTypes.FIRST_MESSAGE.toString())) {
 
@@ -101,10 +103,11 @@ public class SghClientImpl extends Thread implements SghClient {
 					this.serverData.setCurrentState(receivedJSonObject.getString(MessageTypes.SGH_STATE.toString()));
 
 				} else if (receivedJSonObject.containsKey(MessageTypes.HUMIDITY.toString())) {
-					JsonObject innerJSonArray = receivedJSonObject.getJsonObject(MessageTypes.HUMIDITY.toString());
+					final JsonObject innerJSonArray = receivedJSonObject
+							.getJsonObject(MessageTypes.HUMIDITY.toString());
 
 					this.serverData.addUmidityValuesListElement(
-							innerJSonArray.getFloat(MessageTypes.HUMIDITY_VALUE.toString()),
+							innerJSonArray.getInteger(MessageTypes.HUMIDITY_VALUE.toString()),
 							innerJSonArray.getString(MessageTypes.HUMIDITY_DATE.toString()));
 
 				} else if (receivedJSonObject.containsKey(MessageTypes.WARNING.toString())) {
@@ -112,10 +115,14 @@ public class SghClientImpl extends Thread implements SghClient {
 							.addWarningsListElement(receivedJSonObject.getString(MessageTypes.WARNING.toString()));
 
 				} else if (receivedJSonObject.containsKey(MessageTypes.WATERING_LIST.toString())) {
-					JsonObject innerJSonArray = receivedJSonObject.getJsonObject(MessageTypes.WATERING_LIST.toString());
+					final JsonObject innerJSonArray = receivedJSonObject
+							.getJsonObject(MessageTypes.WATERING_LIST.toString());
 
-					this.serverData.addWateringsListElement(
-							innerJSonArray.getFloat(MessageTypes.WATERING_DURATION.toString()) / 1000,
+					final BigDecimal wateringDuration = new BigDecimal(
+							innerJSonArray.getFloat(MessageTypes.WATERING_DURATION.toString()) / 1000).setScale(2,
+									RoundingMode.HALF_UP);
+
+					this.serverData.addWateringsListElement(wateringDuration.floatValue(),
 							innerJSonArray.getString(MessageTypes.WATERING_DATE.toString()));
 				}
 			}

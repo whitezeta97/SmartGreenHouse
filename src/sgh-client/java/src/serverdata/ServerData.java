@@ -44,7 +44,7 @@ public interface ServerData {
 	 * @param receivingDate
 	 *            the receiving Date of the humidity value.
 	 */
-	void addUmidityValuesListElement(Float umidityValue, String receivingDate);
+	void addUmidityValuesListElement(int umidityValue, String receivingDate);
 
 	/**
 	 * Adds a watering to the waterings list. If the list is full the first element
@@ -55,7 +55,7 @@ public interface ServerData {
 	 * @param wateringDate
 	 *            the watering Date.
 	 */
-	void addWateringsListElement(Float wateringDuration, String wateringDate);
+	void addWateringsListElement(float wateringDuration, String wateringDate);
 
 	/**
 	 * Add a warning to the warnings list. If the list is full the first element of
@@ -100,7 +100,7 @@ public interface ServerData {
 	 * 
 	 * @return the humidity values and Date list.
 	 */
-	List<Pair<Float, String>> getHumidityValuesList();
+	List<Pair<Integer, String>> getHumidityValuesList();
 
 	/**
 	 * Returns the received waterings Dates.

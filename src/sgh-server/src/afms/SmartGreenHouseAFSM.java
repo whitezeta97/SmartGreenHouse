@@ -17,10 +17,10 @@ import utilities.SghPumpStates;
 public class SmartGreenHouseAFSM implements SghAfsm {
 	private static final String MANUALMODE_OFF = "manualmodeoff";
 	private static final String MANUALMODE_ON = "manualmodeon";
-	private static final float UMIN = 30;
-	private static final float U_MED = 20;
-	private static final float U_LOW = 10;
-	private static final float DELTAU = 5;
+	private static final int UMIN = 30;
+	private static final int U_MED = 20;
+	private static final int U_LOW = 10;
+	private static final int DELTAU = 5;
 	private static final int T_MAX = 5000;
 
 	private long wateringStartedTime;
@@ -144,7 +144,7 @@ public class SmartGreenHouseAFSM implements SghAfsm {
 			return;
 		}
 
-		final float humidity = ((EdgeMsgEvent) ev).getMsg();
+		final int humidity = ((EdgeMsgEvent) ev).getMsgValue();
 		System.out.println("SERVER: Received: " + humidity);
 
 		if (humidity >= 0 && humidity <= 100) {

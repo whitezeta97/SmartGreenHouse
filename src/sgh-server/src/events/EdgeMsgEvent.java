@@ -12,6 +12,6 @@ public interface EdgeMsgEvent extends Event {
 	 * 
 	 * @return the message received.
 	 */
-	float getMsg();
+	int getMsgValue();
 
 }

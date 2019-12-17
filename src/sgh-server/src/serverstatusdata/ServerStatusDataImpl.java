@@ -17,7 +17,7 @@ public class ServerStatusDataImpl implements ServerStatusData {
 	private volatile boolean isManualMode;
 	private volatile boolean isWatering;
 	private volatile SghPumpStates currentState;
-	private BlockingQueue<Pair<Float, Date>> humidityValuesList;
+	private BlockingQueue<Pair<Integer, Date>> humidityValuesList;
 	private BlockingQueue<Pair<Long, Date>> wateringsList;
 	private BlockingQueue<Date> warningsList;
 	private int listSize = 100;
@@ -53,12 +53,12 @@ public class ServerStatusDataImpl implements ServerStatusData {
 	}
 
 	@Override
-	public void setManualMode(boolean manualMode) {
+	public void setManualMode(final boolean manualMode) {
 		this.isManualMode = manualMode;
 	}
 
 	@Override
-	public void setWatering(boolean isWatering) {
+	public void setWatering(final boolean isWatering) {
 		this.isWatering = isWatering;
 	}
 
@@ -68,20 +68,20 @@ public class ServerStatusDataImpl implements ServerStatusData {
 	}
 
 	@Override
-	public void addHumidityValuesListElement(float humidityValue, Date receivingDate) {
+	public void addHumidityValuesListElement(final int humidityValue, final Date receivingDate) {
 		this.manageListFull(this.humidityValuesList);
-		this.humidityValuesList.add(new Pair<Float, Date>(humidityValue, receivingDate));
+		this.humidityValuesList.add(new Pair<Integer, Date>(humidityValue, receivingDate));
 
 	}
 
 	@Override
-	public void addWateringsListElement(long wateringDuration, Date wateringDate) {
+	public void addWateringsListElement(final long wateringDuration, final Date wateringDate) {
 		this.manageListFull(this.wateringsList);
 		this.wateringsList.add(new Pair<Long, Date>(wateringDuration, wateringDate));
 	}
 
 	@Override
-	public void addWarningsListElement(Date warningDate) {
+	public void addWarningsListElement(final Date warningDate) {
 		this.manageListFull(this.warningsList);
 		this.warningsList.add(warningDate);
 
@@ -103,7 +103,7 @@ public class ServerStatusDataImpl implements ServerStatusData {
 	}
 
 	@Override
-	public BlockingQueue<Pair<Float, Date>> getHumidityValuesList() {
+	public BlockingQueue<Pair<Integer, Date>> getHumidityValuesList() {
 		return this.humidityValuesList;
 	}
 
