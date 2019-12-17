@@ -37,7 +37,8 @@ public interface ServerStatusData {
 	void setCurrentState(SghPumpStates currentState);
 
 	/**
-	 * Adds a humidity value to the list.
+	 * Adds a humidity value to the list. If the list is full the first element of
+	 * the list is removed and the new element is added.
 	 * 
 	 * @param humidityValue
 	 *            the humidity value.
@@ -47,7 +48,8 @@ public interface ServerStatusData {
 	void addHumidityValuesListElement(float humidityValue, Date receivingDate);
 
 	/**
-	 * Adds a watering to the waterings list.
+	 * Adds a watering to the waterings list. If the list is full the first element
+	 * of the list is removed and the new element is added.
 	 * 
 	 * @param wateringDuration
 	 *            the watering duration.
@@ -57,7 +59,8 @@ public interface ServerStatusData {
 	void addWateringsListElement(long wateringDuration, Date wateringDate);
 
 	/**
-	 * Add a warning to the warnings list.
+	 * Add a warning to the warnings list. If the list is full the first element of
+	 * the list is removed and the new element is added.
 	 * 
 	 * @param warningDate
 	 *            the warning Date.

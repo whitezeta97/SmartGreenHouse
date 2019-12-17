@@ -36,7 +36,8 @@ public interface ServerData {
 	void setCurrentState(String currentState);
 
 	/**
-	 * Adds a humidity value to the list.
+	 * Adds a humidity value to the list. If the list is full the first element of
+	 * the list is removed and the new element is added.
 	 * 
 	 * @param humidityValue
 	 *            the humidity value.
@@ -46,7 +47,8 @@ public interface ServerData {
 	void addUmidityValuesListElement(Float umidityValue, String receivingDate);
 
 	/**
-	 * Adds a watering to the waterings list.
+	 * Adds a watering to the waterings list. If the list is full the first element
+	 * of the list is removed and the new element is added.
 	 * 
 	 * @param wateringDuration
 	 *            the watering duration.
@@ -56,7 +58,8 @@ public interface ServerData {
 	void addWateringsListElement(Float wateringDuration, String wateringDate);
 
 	/**
-	 * Add a warning to the warnings list.
+	 * Add a warning to the warnings list. If the list is full the first element of
+	 * the list is removed and the new element is added.
 	 * 
 	 * @param warningDate
 	 *            the warning Date.
