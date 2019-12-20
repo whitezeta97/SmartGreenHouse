@@ -28,7 +28,7 @@ char* ssidName = "G3_1477";
 /* WPA2 PSK password */
 char* pwd = "00000000";
 /* service IP address */ 
-char* address = "http://6e24169d.ngrok.io ";
+char* address = "http://56a91a61.ngrok.io";
 
 void setup() {
    Serial.begin(BAUDE_RATE);
@@ -53,8 +53,6 @@ int sendData(String address, float value, String place){
     ", \"place\": \"" + place +"\" }";    
    int retCode = http.POST(msg);   
    http.end();   
-   // String payload = http.getString();  
-   // Serial.println(payload); 
     
    return retCode;
    
@@ -78,22 +76,19 @@ void loop() {
 
    Serial.println(String(humidity) + "%");
    
-   if (lastHumiditySend != humidity) {
-      if (WiFi.status()== WL_CONNECTED) {
-         /* send data */
-         Serial.print("sending " + String(humidity) + "...");    
-         int code = sendData(address, humidity, "home");
-         /* log result */
-         if (code == OK) {
-            Serial.println("Umidity is been send correctly!");
-            lastHumiditySend = humidity;  
-         } else {
-            Serial.println("There was been an error with sending the humidity!");
-         }
+    if (WiFi.status()== WL_CONNECTED) {
+      /* send data */
+      Serial.print("sending " + String(humidity) + "...");    
+      int code = sendData(address, humidity, "home");
+      /* log result */
+      if (code == OK) {
+        Serial.println("Umidity is been send correctly!");
       } else {
-         Serial.println("Error in WiFi connection");
+        Serial.println("There was been an error with sending the humidity!");
       }
-   }
+    } else {
+         Serial.println("Error in WiFi connection");
+    }
 
    finalTime = millis();
    unsigned long waitingTime = PERIOD - (finalTime - initTime);
