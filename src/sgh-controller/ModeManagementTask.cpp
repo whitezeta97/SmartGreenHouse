@@ -57,6 +57,8 @@ void ModeManagementTask::tick() {
             this->connectionEnable = true;
             strcpy(message, CONNECTION_ENABLE);
             sendMessageToBluetooth(message);
+			strcpy(message, itoa(this->currentHumidity, message, BASE_10));
+            sendMessageToBluetooth(message);
         }
         if (this->bluetooth->available() > 0) {
             data = this->bluetooth->read();
