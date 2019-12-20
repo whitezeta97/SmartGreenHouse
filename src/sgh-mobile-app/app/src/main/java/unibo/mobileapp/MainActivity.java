@@ -38,6 +38,11 @@ public class MainActivity extends AppCompatActivity {
             String action = intent.getAction();
             if (BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(action)) {
                 findViewById(R.id.connectBtn).setEnabled(true);
+                findViewById(R.id.btnMode).setEnabled(false);
+                findViewById(R.id.btnPumps).setEnabled(false);
+                findViewById(R.id.rbMinimumFlow).setEnabled(false);
+                findViewById(R.id.rbMedium).setEnabled(false);
+                findViewById(R.id.rbMaximum).setEnabled(false);
                 ((TextView) findViewById(R.id.statusLabel)).setText(String.format("Status : not connected"));
                 ((TextView) findViewById(R.id.humidityLabel)).setText(String.format(""));
             }

@@ -24,7 +24,7 @@ public class ControllerImpl implements Controller {
 	public ControllerImpl() {
 		this.mutex = new Semaphore(ControllerImpl.MUTEXT_PERMITS);
 		this.serverData = new ServerDataImpl();
-		this.sghClient = new SghClientImpl("89797862.ngrok.io", 80, this.serverData, this.mutex);
+		this.sghClient = new SghClientImpl("93ab44b2.ngrok.io", 80, this.serverData, this.mutex);
 		this.gui = new GuiImpl(this, this.mutex);
 	}
 

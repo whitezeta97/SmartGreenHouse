@@ -42,7 +42,7 @@ public class ExtendedSerialCommChannel implements CommChannel, SerialPortEventLi
 
 			this.serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN | SerialPort.FLOWCONTROL_RTSCTS_OUT);
 
-			// serialPort.addEventListener(this, SerialPort.MASK_RXCHAR);
+			//serialPort.addEventListener(this, SerialPort.MASK_RXCHAR);
 			this.serialPort.addEventListener(this);
 
 			System.out.println("serial port ok");

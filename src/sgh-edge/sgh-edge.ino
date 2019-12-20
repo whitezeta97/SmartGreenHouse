@@ -28,7 +28,7 @@ char* ssidName = "G3_1477";
 /* WPA2 PSK password */
 char* pwd = "00000000";
 /* service IP address */ 
-char* address = "http://8624b131.ngrok.io";
+char* address = "http://6e24169d.ngrok.io ";
 
 void setup() {
    Serial.begin(BAUDE_RATE);
