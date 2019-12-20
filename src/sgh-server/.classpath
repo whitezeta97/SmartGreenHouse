@@ -15,5 +15,6 @@
 	<classpathentry kind="lib" path="lib/vertx-web-client-3.5.4.jar"/>
 	<classpathentry kind="lib" path="lib/jssc.jar"/>
 	<classpathentry kind="lib" path="lib/RXTXcomm.jar"/>
+	<classpathentry kind="lib" path="lib/jssc-2.8.0-src.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -13,9 +13,11 @@
 #define MANUALMODE_OFF 	"manualmodeoff"
 #define MANUALMODE_ON 	"manualmodeon"
 
+#define TERMINATOR      '.'
+
 class ServerCommunicationTask: public Task {
 	
-private:	
+private:
   Mode currentMode;
   
   bool isNumber(String string);

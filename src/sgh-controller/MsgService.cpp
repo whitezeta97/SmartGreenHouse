@@ -38,8 +38,9 @@ void serialEvent() {
   while (Serial.available()) {
     char ch = (char) Serial.read();
     if (ch == '\n'){
+      content += TERMINATOR;
       MsgService.currentMsg = new Msg(content);
-      MsgService.msgAvailable = true;      
+      MsgService.msgAvailable = true;
     } else {
       content += ch;      
     }
@@ -62,5 +63,3 @@ Msg* MsgServiceClass::receiveMsg(Pattern& pattern){
   }
   
 }
-
-

@@ -45,7 +45,7 @@ public class ObservableMsgServiceImpl extends AbstractObservable implements Obse
 			while (true) {
 				try {
 					final String msg = channel.receiveMsg();
-					System.out.println("received " + msg);
+					//System.out.println("received " + msg);
 					this.notifyEvent(new ControllerMsgEventImpl(msg));
 				} catch (Exception ex) {
 					ex.printStackTrace();

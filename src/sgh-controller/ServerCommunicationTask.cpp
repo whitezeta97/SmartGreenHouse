@@ -3,8 +3,10 @@
 #include "Flow.h"
 #include "Humidity.h"
 
+#include "Arduino.h"
+
 ServerCommunicationTask::ServerCommunicationTask() {
-	this->currentMode = AUTOMATIC;
+  this->currentMode = AUTOMATIC;
 }
 
 void ServerCommunicationTask::init(int period) {
@@ -22,37 +24,44 @@ bool ServerCommunicationTask::isNumber(String string) {
 }
 
 void ServerCommunicationTask::manageManualModeOffState(String message) {
-	if (message.equals(PUMP_OFF)) {
+  if (message.equals(PUMP_OFF)) {
     pumps = OFF;
-  } else if (message.equals(P_MIN)) {
-    flow = MINIMUM;
+  } else if (message.equals(P_MIN) || message.equals(P_MED) || message.equals(P_MAX)) {
+    flow = message.equals(P_MIN) ? MINIMUM : message.equals(P_MED) ? MEDIUM : MAXIMUM;
     pumps = ON;
-  } else if (message.equals(P_MED)) {
-    pumps = ON;
-    flow = MEDIUM;
-  } else if (message.equals(P_MAX)) {
-    pumps = ON;
-    flow = MAXIMUM;
   }
 }
 
 void ServerCommunicationTask::tick() {
 
-	if (this->currentMode != mode) {
-		this->currentMode = mode;
-		MsgService.sendMsg(this->currentMode == MANUAL ? MANUALMODE_ON : MANUALMODE_OFF);
-	}
+  if (this->currentMode != mode) {
+    this->currentMode = mode;
+    MsgService.sendMsg(this->currentMode == MANUAL ? MANUALMODE_ON : MANUALMODE_OFF);
+  }
+ 
 
   Msg* msg = MsgService.receiveMsg();
-	String msgString = MsgService.receiveMsg()->getContent();
-
-	if (this->currentMode == MANUAL) {
-		this->manageManualModeOffState(msgString);
-	}
-
-	if (this->isNumber(msgString)) {
-		humidity = atoi(msgString.c_str());
-	}
-
-	delete msg;
+  if (msg != NULL) {
+    String msgString = msg->getContent();
+    String message = "";
+    for (int i = 0; i < msgString.length(); i++) {
+      char character = msgString.charAt(i);
+      if (character != TERMINATOR) {
+        message += character;
+      } else {
+        if (this->currentMode == AUTOMATIC) {
+          this->manageManualModeOffState(message);
+        }
+        if (this->isNumber(message)) {
+          humidity = atoi(message.c_str());
+        }
+        if (!message.equals("")) {
+          MsgService.sendMsg(message);  
+        }
+        message = "";
+      }
+    } 
+  }
+  delete msg;
+  
 }

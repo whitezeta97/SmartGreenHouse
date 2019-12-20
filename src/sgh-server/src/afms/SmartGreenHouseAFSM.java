@@ -97,7 +97,7 @@ public class SmartGreenHouseAFSM implements SghAfsm {
 	public void manageControllerMsgEvent(final ControllerMsgEvent ev) {
 
 		final String msg = ((ControllerMsgEvent) ev).getMsg();
-		System.out.println("SERVER: Received: " + msg);
+		System.out.println("SERVER Received from Controller: " + msg);
 
 		if (msg.equals(SmartGreenHouseAFSM.MANUALMODE_ON)) {
 			this.serverData.setManualMode(true);

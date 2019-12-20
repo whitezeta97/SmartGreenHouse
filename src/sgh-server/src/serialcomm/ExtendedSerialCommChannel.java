@@ -68,6 +68,7 @@ public class ExtendedSerialCommChannel implements CommChannel, SerialPortEventLi
 		for (int i = 0; i < array.length; i++) {
 			bytes[i] = (byte) array[i];
 		}
+		
 		try {
 			synchronized (this.serialPort) {
 				this.serialPort.writeBytes(bytes);

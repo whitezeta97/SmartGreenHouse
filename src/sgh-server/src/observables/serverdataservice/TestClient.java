@@ -14,7 +14,7 @@ public class TestClient extends AbstractVerticle {
 
 	public static void main(String[] args) {
 
-		String host = "93ab44b2.ngrok.io";
+		String host = "56a91a61.ngrok.io";
 		int port = 80;
 
 		Vertx vertx = Vertx.vertx();
@@ -46,7 +46,7 @@ public class TestClient extends AbstractVerticle {
 		}).putHeader("content-type", "application/json").end(item.encodePrettily());
 
 		try {
-			Thread.sleep(537);
+			Thread.sleep(2000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -4,6 +4,8 @@
 #include "Arduino.h"
 
 class Msg {
+  #define TERMINATOR '.'
+  
   String content;
 
 public:
@@ -42,4 +44,3 @@ public:
 extern MsgServiceClass MsgService;
 
 #endif
-
