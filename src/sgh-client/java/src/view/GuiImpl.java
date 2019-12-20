@@ -14,7 +14,7 @@ import java.util.concurrent.Semaphore;
  * Implements the Graphic User Interface of the application.
  *
  */
-public class GuiImpl extends Thread implements Gui {
+public class GuiImpl implements Gui {
 	private static final int SLEEP_TIME = 60;
 
 	private DefaultListModel<String> viewHumidityList;
@@ -45,7 +45,7 @@ public class GuiImpl extends Thread implements Gui {
 	 * @param mutex
 	 *            the semaphore to access shared data.
 	 */
-	public GuiImpl(final Controller controller, Semaphore mutex) {
+	public GuiImpl(final Controller controller, final Semaphore mutex) {
 
 		this.controller = controller;
 		this.mutex = mutex;
@@ -165,7 +165,8 @@ public class GuiImpl extends Thread implements Gui {
 		jf.setTitle("Smart Green House Front-end");
 		jf.setVisible(true);
 
-		this.start();
+		this.startRendering();
+
 	}
 
 	/* Manages JList settings. */
@@ -240,25 +241,27 @@ public class GuiImpl extends Thread implements Gui {
 
 	}
 
-	@Override
-	public void run() {
-		while (true) {
-			try {
-				this.mutex.acquire();
-				this.viewUpdate();
-				this.mutex.release();
-			} catch (InterruptedException e) {
-				this.mutex.release();
-				e.printStackTrace();
-			}
+	/* Starts view rendering. */
+	private void startRendering() {
+		new Thread(() -> {
+			while (true) {
+				try {
+					this.mutex.acquire();
+					this.viewUpdate();
+					this.mutex.release();
+				} catch (InterruptedException e) {
+					this.mutex.release();
+					e.printStackTrace();
+				}
 
-			try {
-				Thread.sleep(SLEEP_TIME);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+				try {
+					Thread.sleep(SLEEP_TIME);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
+		}).start();
 
-		}
 	}
 
 }

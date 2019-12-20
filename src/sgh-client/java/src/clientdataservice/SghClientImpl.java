@@ -19,9 +19,9 @@ import utilities.MessageTypes;
  * Implements the SGH Client that sends get request to SGH Server to get data.
  *
  */
-public class SghClientImpl extends Thread implements SghClient {
+public class SghClientImpl implements SghClient {
 
-	private static final int SLEEP_TIME = 800;
+	private static final int SLEEP_TIME = 200;
 	private static final int MAX_SIZE = 100;
 
 	private String host;
@@ -56,35 +56,39 @@ public class SghClientImpl extends Thread implements SghClient {
 
 		this.mutex = mutex;
 
-		this.start();
+		this.startGettingDataFromServer();
 	}
 
-	@Override
-	public void run() {
+	/* Starts getting data from server. */
+	private void startGettingDataFromServer() {
+		new Thread(() -> {
+			while (true) {
+				try {
+					this.getDataFromServer();
+					this.mutex.acquire();
+					this.manageDataFromHttpResponses();
+					this.mutex.release();
+				} catch (InterruptedException e1) {
+					this.mutex.release();
+					e1.printStackTrace();
+				}
 
-		while (true) {
-			try {
-				this.getDataFromServer();
-				this.mutex.acquire();
-				this.manageDataFromHttpResponses();
-				this.mutex.release();
-			} catch (InterruptedException e1) {
-				this.mutex.release();
-				e1.printStackTrace();
+				try {
+					Thread.sleep(SghClientImpl.SLEEP_TIME);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
-
-			try {
-				Thread.sleep(SghClientImpl.SLEEP_TIME);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
+		}).start();
 
 	}
 
 	/* stores locally the SGH Server data received from SGH Server. */
 	private void manageDataFromHttpResponses() {
-		this.serverData.setLastUpdateFromServer(new Date().toString());
+
+		if (!this.receivedDataFromServer.isEmpty()) {
+			this.serverData.setLastUpdateFromServer(new Date().toString());
+		}
 
 		for (final JsonArray arr : this.receivedDataFromServer) {
 
